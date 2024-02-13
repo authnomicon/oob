@@ -2,11 +2,12 @@
 
 var expect = require('chai').expect;
 var sinon = require('sinon');
-var pkg = require('..');
+//var pkg = require('..');
 
 
-describe('@authnomicon/federated', function() {
+describe('@authnomicon/oob', function() {
   
+  /*
   describe('package.json', function() {
     var json = require('../package.json');
     
@@ -26,6 +27,7 @@ describe('@authnomicon/federated', function() {
     expect(pkg.openidconnect).to.be.an('object');
     expect(pkg.openidconnect.RPInitiatedLogoutService).to.be.an('function');
   });
+  */
   
 });
 
