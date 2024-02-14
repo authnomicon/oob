@@ -4,7 +4,7 @@ exports = module.exports = function() {
   
   return function(req, res, next) {
     var q = {};
-    //if (res.locals.loginHint) { q.login_hint = res.locals.loginHint; }
+    if (res.locals.address) { q.address = res.locals.address; }
     
     return res.redirect(url.format({
       pathname: '/login/oob',
