@@ -34,13 +34,17 @@
   "assembly": {
     "namespace": "org.authnomicon/oob",
     "components": [
-      "prompt"
+      "prompt",
+      "service"
     ]
   },
   "directories": {
     "com": "com"
   },
   "dependencies": {
+    "body-parser": "^1.20.2",
+    "csurf": "^1.11.0",
+    "ejs": "^3.1.9",
     "express": "^4.17.1",
     "flowstate": "^0.6.0"
   },

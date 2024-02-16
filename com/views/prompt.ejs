@@ -1,0 +1,25 @@
+<% if (typeof message !== 'undefined') { %>
+  <b><%= message %></b>
+<% } %>
+<% if (typeof failureCount !== 'undefined') { %>
+  <b>Failed attempts: <%= failureCount %></b>
+<% } %>
+
+<form action="/login/oob" method="post">
+	<div>
+	<label>Email or phone:</label>
+	<input type="text" name="address"/><br/>
+	</div>
+	<div>
+  <% if (typeof returnTo !== 'undefined') { %>
+    <input type="hidden" name="return_to" value="<%= returnTo %>"/>
+  <% } %>
+  <% if (typeof state !== 'undefined') { %>
+    <input type="hidden" name="state" value="<%= state %>"/>
+  <% } %>
+  <% if (typeof csrfToken !== 'undefined') { %>
+    <input type="hidden" name="csrf_token" value="<%= csrfToken %>"/>
+  <% } %>
+	<input type="submit" value="Submit"/>
+	</div>
+</form>
