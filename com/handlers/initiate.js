@@ -3,6 +3,8 @@ exports = module.exports = function(store) {
   function initiate(req, res, next) {
     console.log('transmit code....');
     console.log(req.body);
+    
+    res.redirect('/login/oob/verify');
   }
   
   
