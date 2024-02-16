@@ -1,11 +1,12 @@
 // Module dependencies.
 var express = require('express');
 
-exports = module.exports = function(promptHandler, initiateHandler, challengeHandler) {
+exports = module.exports = function(promptHandler, initiateHandler, challengeHandler, verifyHandler) {
   var router = express.Router();
   router.get('/', promptHandler);
   router.post('/', initiateHandler);
   router.get('/verify', challengeHandler);
+  router.post('/verify', verifyHandler);
   
   return router;
 };
@@ -16,5 +17,6 @@ exports['@path'] = '/login/oob';
 exports['@require'] = [
   './handlers/prompt',
   './handlers/initiate',
-  './handlers/challenge'
+  './handlers/challenge',
+  './handlers/verify'
 ];
