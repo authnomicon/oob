@@ -1,11 +1,13 @@
 var Address = require('address-rfc2821').Address;
 
+// https://www.rfc-editor.org/rfc/rfc6068.html
+
 function EmailAddressParser() {
 }
 
 EmailAddressParser.prototype.parse = function(address) {
   var parsed = new Address(address);
-  return { type: 'email', address: parsed.address() }
+  return { scheme: 'mailto', address: parsed.address() }
 }
 
 
@@ -15,4 +17,4 @@ exports = module.exports = function(redirectHandler) {
 
 // Module annotations.
 exports['@implements'] = 'module:@authnomicon/oob.AddressParser';
-exports['@type'] = 'email';
+exports['@scheme'] = 'mailto';

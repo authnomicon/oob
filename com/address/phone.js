@@ -1,6 +1,9 @@
 var phoneUtil = require('google-libphonenumber').PhoneNumberUtil.getInstance();
 var PNF = require('google-libphonenumber').PhoneNumberFormat;
 
+// https://www.rfc-editor.org/rfc/rfc3966.html
+
+
 function PhoneNumberClassifier() {
 }
 
@@ -9,7 +12,7 @@ PhoneNumberClassifier.prototype.parse = function(address) {
   
   var number = phoneUtil.parseAndKeepRawInput(address, 'US');
   console.log(number)
-  return { type: 'phone', address: phoneUtil.format(number, PNF.E164) }
+  return { scheme: 'tel', address: phoneUtil.format(number, PNF.E164) }
 }
 
 
@@ -19,4 +22,4 @@ exports = module.exports = function() {
 
 // Module annotations.
 exports['@implements'] = 'module:@authnomicon/oob.AddressParser';
-exports['@type'] = 'phone';
+exports['@scheme'] = 'tel';

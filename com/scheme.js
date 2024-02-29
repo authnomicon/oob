@@ -20,9 +20,9 @@ exports = module.exports = function(oobGateway, Address) {
     console.log(parsed);
     
     
-    return;
+    //return;
     
-    oobGateway.transmit(address, transport, function(err, ctx) {
+    oobGateway.transmit(parsed.address, transport, parsed.scheme, function(err, ctx) {
       return cb(err, ctx);
     });
   });

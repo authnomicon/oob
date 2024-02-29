@@ -36,6 +36,7 @@
     "components": [
       "prompt",
       "service",
+      "gateway",
       "address/email/parser",
       "address/phone"
     ]
