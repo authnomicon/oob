@@ -14,10 +14,23 @@ exports = module.exports = function(scheme, authenticator, gateway, Address, sto
     
     
     try {
+      var self = this;
+      
       gateway.challenge(addr.address, transport, addr.scheme, function(err, ctx) {
         console.log('gateway challenged!!');
         console.log(err);
         console.log(ctx);
+        
+        var state ={};
+        state.channel = addr.scheme;
+        state.address = addr.address;
+        state.transport = ctx.transport;
+        state.secret = ctx.secret;
+        req.pushState(state, '/login/oob/verify');
+        res.redirect('/login/oob/verify');
+        
+        //req.pushState(state, self._verifyURL, function(err, h) {
+        
         
         //return cb(err, ctx);
       });
