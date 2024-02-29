@@ -22,9 +22,15 @@ exports = module.exports = function(oobGateway, Address) {
     
     //return;
     
-    oobGateway.transmit(parsed.address, transport, parsed.scheme, function(err, ctx) {
-      return cb(err, ctx);
-    });
+    try {
+      oobGateway.transmit(parsed.address, transport, parsed.scheme, function(err, ctx) {
+        return cb(err, ctx);
+      });
+    } catch (ex) {
+      console.log("EX!")
+      console.log(ex);
+      return cb(ex);
+    }
   });
 };
 
