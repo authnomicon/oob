@@ -11,26 +11,6 @@ exports = module.exports = function(oobGateway, Address) {
     console.log(transport);
     console.log(code);
     console.log(ctx);
-  }, function transmit(address, transport, cb) {
-    console.log('trasmit oob...');
-    console.log(address);
-    
-    var parsed = Address.parse(address);
-    console.log('parsed it!');
-    console.log(parsed);
-    
-    
-    //return;
-    
-    try {
-      oobGateway.transmit(parsed.address, transport, parsed.scheme, function(err, ctx) {
-        return cb(err, ctx);
-      });
-    } catch (ex) {
-      console.log("EX!")
-      console.log(ex);
-      return cb(ex);
-    }
   });
 };
 
