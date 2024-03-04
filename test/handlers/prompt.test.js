@@ -27,4 +27,26 @@ describe('handlers/prompt', function() {
     expect(flowstateSpy).to.be.calledWith({ store: store });
   });
   
+  describe('handler', function() {
+  
+    it('should render', function(done) {
+      var store = new Object();
+      var handler = factory(store);
+    
+      chai.express.use(handler)
+        .request(function(req, res) {
+          req.session = {};
+          req.connection = {};
+        })
+        .finish(function() {
+          expect(this).to.have.status(200);
+          expect(this).to.render('login/oob');
+          expect(this).to.include.locals([ 'csrfToken' ]);
+          done();
+        })
+        .listen();
+    }); // should render
+    
+  }); // handler
+  
 });
