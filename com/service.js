@@ -39,6 +39,6 @@ exports['@path'] = '/login/oob';
 exports['@require'] = [
   './handlers/prompt',
   './handlers/initiate',
-  './handlers/challenge',
+  './handlers/input',
   './handlers/verify'
 ];
