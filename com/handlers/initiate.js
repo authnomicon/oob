@@ -1,4 +1,4 @@
-exports = module.exports = function(scheme, authenticator, gateway, Address, store) {
+exports = module.exports = function(gateway, Address, store) {
   
   function initiate(req, res, next) {
     console.log('initiate oob auth...');
@@ -51,13 +51,10 @@ exports = module.exports = function(scheme, authenticator, gateway, Address, sto
     require('csurf')({ value: function(req){ return req.body && req.body.csrf_token; } }),
     require('flowstate')({ store: store }),
     initiate
-    //authenticator.authenticate(scheme)
   ];
 };
 
 exports['@require'] = [
-  '../scheme',
-  'module:passport.Authenticator',
   'module:@authnomicon/oob.Gateway',
   '../address',
   'module:flowstate.Store'
