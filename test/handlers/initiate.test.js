@@ -34,7 +34,7 @@ describe('handlers/initiate', function() {
   
   describe('handler', function() {
     
-    it('should challenge address', function(done) {
+    it('should challenge telephone number via sms by default', function(done) {
       var gateway = new Object();
       gateway.challenge = sinon.stub().yieldsAsync(null, { transport: 'sms', secret: '123456' });
       var address = new Object();
@@ -71,9 +71,9 @@ describe('handlers/initiate', function() {
           done();
         })
         .listen();
-    }); // should challenge address
+    }); // should challenge telephone number via sms by default
     
-    it('should challenge address via transport', function(done) {
+    it('should challenge telephone number via call by request', function(done) {
       var gateway = new Object();
       gateway.challenge = sinon.stub().yieldsAsync(null, { transport: 'call', secret: '123456' });
       var address = new Object();
@@ -111,7 +111,46 @@ describe('handlers/initiate', function() {
           done();
         })
         .listen();
-    }); // should challenge address via transport
+    }); // should challenge telephone number via call by request
+    
+    it('should challenge email address', function(done) {
+      var gateway = new Object();
+      gateway.challenge = sinon.stub().yieldsAsync(null, { secret: '123456' });
+      var address = new Object();
+      address.parse = sinon.stub().returns({ scheme: 'mailto', address: 'alice@example.com' });
+      var store = new Object();
+      store.set = sinon.stub().yieldsAsync(null);
+      var handler = factory(gateway, address, store);
+    
+      chai.express.use(handler)
+        .request(function(req, res) {
+          req.headers = {
+            'host': 'www.example.com'
+          }
+          req.body = {
+            address: 'alice@example.com'
+          };
+          req.session = {};
+          req.connection = { encrypted: true };
+        })
+        .finish(function() {
+          expect(address.parse).to.have.been.calledOnceWith('alice@example.com', undefined);
+          expect(gateway.challenge).to.have.been.calledOnceWith('alice@example.com', undefined, 'mailto');
+          expect(store.set).to.have.been.calledOnce;
+          expect(store.set.getCall(0).args[2]).to.deep.equal({
+            location: 'https://www.example.com/login/oob/verify',
+            channel: 'mailto',
+            address: 'alice@example.com',
+            transport: undefined,
+            secret: '123456'
+          });
+          
+          expect(this).to.have.status(302);
+          expect(this._headers['Location']).to.startWith('/login/oob/verify?');
+          done();
+        })
+        .listen();
+    }); // should challenge email address
     
   });
   
