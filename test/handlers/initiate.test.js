@@ -152,6 +152,38 @@ describe('handlers/initiate', function() {
         .listen();
     }); // should challenge email address
     
+    it('should error when gateway encounters an error', function(done) {
+      var gateway = new Object();
+      gateway.challenge = sinon.stub().yieldsAsync(new Error('something went wrong'));
+      var address = new Object();
+      address.parse = sinon.stub().returns({ scheme: 'tel', address: '+1-201-555-0123' });
+      var store = new Object();
+      store.set = sinon.stub().yieldsAsync(null);
+      var handler = factory(gateway, address, store);
+    
+      chai.express.use(handler)
+        .request(function(req, res) {
+          req.headers = {
+            'host': 'www.example.com'
+          }
+          req.body = {
+            address: '201-555-0123'
+          };
+          req.session = {};
+          req.connection = { encrypted: true };
+        })
+        .next(function(err) {
+          expect(address.parse).to.have.been.calledOnceWith('201-555-0123', undefined);
+          expect(gateway.challenge).to.have.been.calledOnceWith('tel', '+1-201-555-0123', undefined);
+          expect(store.set).to.not.have.been.called;
+          
+          expect(err).to.be.an.instanceOf(Error);
+          expect(err.message).to.equal('something went wrong');
+          done();
+        })
+        .listen();
+    }); // should error when gateway encounters an error
+    
   }); // handler
   
 });

@@ -9,7 +9,7 @@ exports = module.exports = function(gateway, Address, store) {
     var addr = Address.parse(address, transport);
     
     gateway.challenge(addr.scheme, addr.address, transport, function(err, ctx) {
-      if (err) { return cb(err); }
+      if (err) { return next(err); }
       
       var state ={};
       state.channel = addr.scheme;
