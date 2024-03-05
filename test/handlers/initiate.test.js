@@ -32,4 +32,47 @@ describe('handlers/initiate', function() {
     expect(flowstateSpy).to.be.calledWith({ store: store });
   });
   
+  describe('handler', function() {
+    
+    it('should challenge', function(done) {
+      var gateway = new Object();
+      gateway.challenge = sinon.stub().yieldsAsync(null, { secret: '123456' });
+      var address = new Object();
+      address.parse = sinon.stub().returns({ scheme: 'tel', address: '+1-201-555-0123' });
+      var store = new Object();
+      store.set = sinon.stub().yieldsAsync(null);
+      var handler = factory(gateway, address, store);
+    
+      chai.express.use(handler)
+        .request(function(req, res) {
+          req.headers = {
+            'host': 'www.example.com'
+          }
+          req.body = {
+            address: '201-555-0123'
+          };
+          req.session = {};
+          req.connection = { encrypted: true };
+        })
+        .finish(function() {
+          expect(address.parse).to.have.been.calledOnceWith('201-555-0123');
+          expect(gateway.challenge).to.have.been.calledOnceWith('+1-201-555-0123', undefined, 'tel');
+          expect(store.set).to.have.been.calledOnce;
+          expect(store.set.getCall(0).args[2]).to.deep.equal({
+            location: 'https://www.example.com/login/oob/verify',
+            channel: 'tel',
+            address: '+1-201-555-0123',
+            transport: undefined,
+            secret: '123456'
+          });
+          
+          expect(this).to.have.status(302);
+          expect(this._headers['Location']).to.startWith('/login/oob/verify?');
+          done();
+        })
+        .listen();
+    }); // should challenge
+    
+  });
+  
 });
