@@ -36,8 +36,9 @@
     "components": [
       "prompt",
       "service",
-      "gateway",
+      "channelfactory",
       "address",
+      "idrouter",
       "crypto/secret",
       "address/email/parser",
       "address/phone"

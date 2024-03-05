@@ -1,8 +1,8 @@
-var Gateway = require('../lib/gateway');
+var ChannelFactory = require('../lib/channelfactory');
 
 
 exports = module.exports = function(C, randomSecret, logger) {
-  var gateway = new Gateway(randomSecret);
+  var gateway = new ChannelFactory(randomSecret);
   
   return Promise.resolve(gateway)
     .then(function(gateway) {
@@ -35,7 +35,7 @@ exports = module.exports = function(C, randomSecret, logger) {
     });
 };
 
-exports['@implements'] = 'module:@authnomicon/oob.Gateway';
+exports['@implements'] = 'module:@authnomicon/oob.ChannelFactory';
 exports['@singleton'] = true;
 exports['@require'] = [
   '!container',

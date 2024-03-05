@@ -21,8 +21,10 @@ var express = require('express');
  */
 exports = module.exports = function(promptHandler, initiateHandler, inputHandler, verifyHandler) {
   var router = express.Router();
-  router.get('/', promptHandler);
-  router.post('/', initiateHandler);
+  //router.get('/', promptHandler);
+  //router.post('/', initiateHandler);
+  router.get('/', initiateHandler);
+  
   router.get('/verify', inputHandler);
   router.post('/verify', verifyHandler);
   // TODO: /confirm, transferHandler  Handler which displays the code for the user

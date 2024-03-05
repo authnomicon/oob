@@ -1,5 +1,12 @@
 // Module dependencies.
-var httpErrors = require('http-errors');
+var rand = require('rand-token')
+  , httpErrors = require('http-errors');
+
+var NUMERIC = '0123456789';
+
+var defer = typeof setImmediate === 'function'
+  ? setImmediate
+  : function(fn){ process.nextTick(fn.bind.apply(fn, arguments)); };
 
 /**
  * Create out-of-band initiation handler.
@@ -21,17 +28,38 @@ var httpErrors = require('http-errors');
  * @param {flowstate.Store} store - Per-request state store.
  * @returns {express.RequestHandler[]}
  */
-exports = module.exports = function(gateway, Address, store) {
+exports = module.exports = function(channelFactory, Address, store) {
   
   function validate(req, res, next) {
-    if (!req.body.address) { return next(new httpErrors.BadRequest('Missing required parameter: address')); }
+    //if (!req.body.address) { return next(new httpErrors.BadRequest('Missing required parameter: address')); }
     next();
   }
   
   function initiate(req, res, next) {
-    var address = req.body.address
-      , transport = req.body.transport;
+    var address = req.body.address || req.query.address
+      , transport = req.body.transport || req.query.transport;
     
+    var addr = Address.parse(address);
+    channelFactory.create(addr.scheme)
+      .then(function(channel) {
+        if (channel.transmit) {
+          var secret = rand.generate(6, NUMERIC);
+          channel.transmit(addr.address, transport, secret, function(err, ctx) {
+            if (err) { return defer(next, err); }
+            
+            ctx.channel = addr.scheme;
+            ctx.address = addr.address;
+            ctx.secret = secret;
+            req.pushState(ctx, '/login/oob/verify');
+            res.redirect('/login/oob/verify');
+          });
+        }
+      }, function(err) {
+        defer(next, err);
+      });
+    
+    
+    /*
     var addr = Address.parse(address, transport);
     gateway.challenge(addr.scheme, addr.address, transport, function(err, ctx) {
       if (err) { return next(err); }
@@ -47,6 +75,7 @@ exports = module.exports = function(gateway, Address, store) {
         res.redirect('/login/oob/confirm');
       }
     });
+    */
   }
   
   
@@ -61,7 +90,7 @@ exports = module.exports = function(gateway, Address, store) {
 
 // Module annotations.
 exports['@require'] = [
-  'module:@authnomicon/oob.Gateway',
+  'module:@authnomicon/oob.ChannelFactory',
   'module:@authnomicon/oob/address',
   'module:flowstate.Store'
 ];

@@ -16,7 +16,7 @@ exports = module.exports = function(oobGateway, Address) {
 
 // Module annotations.
 exports['@require'] = [
-  'module:@authnomicon/oob.Gateway',
+  'module:@authnomicon/oob.ChannelFactory',
   './address'
   //'module:@authnomicon/core.Directory'
 ];

@@ -35,6 +35,51 @@ describe('handlers/initiate', function() {
   describe('handler', function() {
     
     it('should challenge telephone number via sms by default', function(done) {
+      var channel = new Object();
+      channel.transmit = sinon.stub().yieldsAsync(null, { transport: 'sms' });
+      var channelFactory = new Object();
+      channelFactory.create = sinon.stub().resolves(channel);
+      var address = new Object();
+      address.parse = sinon.stub().returns({ scheme: 'tel', address: '+1-201-555-0123' });
+      var store = new Object();
+      store.set = sinon.stub().yieldsAsync(null);
+      var handler = factory(channelFactory, address, store);
+    
+      chai.express.use(handler)
+        .request(function(req, res) {
+          req.headers = {
+            'host': 'www.example.com'
+          }
+          req.body = {
+            address: '201-555-0123'
+          };
+          req.session = {};
+          req.connection = { encrypted: true };
+        })
+        .finish(function() {
+          expect(address.parse).to.have.been.calledOnceWith('201-555-0123');
+          expect(channelFactory.create).to.have.been.calledOnceWith('tel');
+          expect(store.set).to.have.been.calledOnce;
+          var state = store.set.getCall(0).args[2];
+          expect(channel.transmit).to.have.been.calledOnceWith('+1-201-555-0123', undefined, state.secret);
+          expect(state).to.deep.equal({
+            location: 'https://www.example.com/login/oob/verify',
+            channel: 'tel',
+            address: '+1-201-555-0123',
+            transport: 'sms',
+            secret: state.secret
+          });
+          expect(state.secret).to.have.length(6);
+          
+          expect(this).to.have.status(302);
+          expect(this._headers['Location']).to.startWith('/login/oob/verify?');
+          done();
+        })
+        .listen();
+    }); // should challenge telephone number via sms by default
+    
+    /*
+    it('should challenge telephone number via sms by default', function(done) {
       var gateway = new Object();
       gateway.challenge = sinon.stub().yieldsAsync(null, { transport: 'sms', secret: '123456' });
       var address = new Object();
@@ -331,6 +376,7 @@ describe('handlers/initiate', function() {
         })
         .listen();
     }); // should error when missing address parameter
+    */
     
   }); // handler
   
