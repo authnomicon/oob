@@ -10,7 +10,7 @@ var httpErrors = require('http-errors');
  *
  *   1. Input a code received by the out-of-band device into the web browser.
  *   2. Transfer a code displayed in the web browser to the out-of-band device.
- *   3. Confirm their intent to authenticate in the out-of-band device,
+ *   3. Approve their intent to authenticate in the out-of-band device,
  *      optionally after comparing a code displayed by both the web browser and
  *      the out-of-band device.
  *
