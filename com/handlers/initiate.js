@@ -8,25 +8,17 @@ exports = module.exports = function(gateway, Address, store) {
     
     var addr = Address.parse(address);
     
-    try {
-      var self = this;
+    gateway.challenge(addr.address, transport, addr.scheme, function(err, ctx) {
+      if (err) { return cb(err); }
       
-      gateway.challenge(addr.address, transport, addr.scheme, function(err, ctx) {
-        if (err) { return cb(err); }
-        
-        var state ={};
-        state.channel = addr.scheme;
-        state.address = addr.address;
-        state.transport = ctx.transport;
-        state.secret = ctx.secret;
-        req.pushState(state, '/login/oob/verify');
-        res.redirect('/login/oob/verify');
-      });
-    } catch (ex) {
-      console.log("EX!")
-      console.log(ex);
-      return next(ex);
-    }
+      var state ={};
+      state.channel = addr.scheme;
+      state.address = addr.address;
+      state.transport = ctx.transport;
+      state.secret = ctx.secret;
+      req.pushState(state, '/login/oob/verify');
+      res.redirect('/login/oob/verify');
+    });
     
     
     
