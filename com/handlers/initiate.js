@@ -6,7 +6,7 @@ exports = module.exports = function(gateway, Address, store) {
     var address = req.body.address
       , transport = req.body.transport;
     
-    var addr = Address.parse(address);
+    var addr = Address.parse(address, transport);
     
     gateway.challenge(addr.address, transport, addr.scheme, function(err, ctx) {
       if (err) { return cb(err); }
