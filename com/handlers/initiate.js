@@ -8,7 +8,7 @@ exports = module.exports = function(gateway, Address, store) {
     
     var addr = Address.parse(address, transport);
     
-    gateway.challenge(addr.address, transport, addr.scheme, function(err, ctx) {
+    gateway.challenge(addr.scheme, addr.address, transport, function(err, ctx) {
       if (err) { return cb(err); }
       
       var state ={};

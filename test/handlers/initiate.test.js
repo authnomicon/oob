@@ -56,7 +56,7 @@ describe('handlers/initiate', function() {
         })
         .finish(function() {
           expect(address.parse).to.have.been.calledOnceWith('201-555-0123', undefined);
-          expect(gateway.challenge).to.have.been.calledOnceWith('+1-201-555-0123', undefined, 'tel');
+          expect(gateway.challenge).to.have.been.calledOnceWith('tel', '+1-201-555-0123', undefined);
           expect(store.set).to.have.been.calledOnce;
           expect(store.set.getCall(0).args[2]).to.deep.equal({
             location: 'https://www.example.com/login/oob/verify',
@@ -96,7 +96,7 @@ describe('handlers/initiate', function() {
         })
         .finish(function() {
           expect(address.parse).to.have.been.calledOnceWith('201-555-0123', 'call');
-          expect(gateway.challenge).to.have.been.calledOnceWith('+1-201-555-0123', 'call', 'tel');
+          expect(gateway.challenge).to.have.been.calledOnceWith('tel', '+1-201-555-0123', 'call');
           expect(store.set).to.have.been.calledOnce;
           expect(store.set.getCall(0).args[2]).to.deep.equal({
             location: 'https://www.example.com/login/oob/verify',
@@ -135,7 +135,7 @@ describe('handlers/initiate', function() {
         })
         .finish(function() {
           expect(address.parse).to.have.been.calledOnceWith('alice@example.com', undefined);
-          expect(gateway.challenge).to.have.been.calledOnceWith('alice@example.com', undefined, 'mailto');
+          expect(gateway.challenge).to.have.been.calledOnceWith('mailto', 'alice@example.com', undefined);
           expect(store.set).to.have.been.calledOnce;
           expect(store.set.getCall(0).args[2]).to.deep.equal({
             location: 'https://www.example.com/login/oob/verify',
@@ -152,6 +152,6 @@ describe('handlers/initiate', function() {
         .listen();
     }); // should challenge email address
     
-  });
+  }); // handler
   
 });
