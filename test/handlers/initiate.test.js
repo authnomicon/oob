@@ -141,7 +141,6 @@ describe('handlers/initiate', function() {
             location: 'https://www.example.com/login/oob/verify',
             channel: 'mailto',
             address: 'alice@example.com',
-            transport: undefined,
             secret: '123456'
           });
           
