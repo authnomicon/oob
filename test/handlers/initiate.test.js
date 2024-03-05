@@ -184,6 +184,38 @@ describe('handlers/initiate', function() {
         .listen();
     }); // should error when gateway encounters an error
     
+    it('should error when missing address parameter', function(done) {
+      var gateway = new Object();
+      gateway.challenge = sinon.stub().yieldsAsync(null, { transport: 'sms', secret: '123456' });
+      var address = new Object();
+      address.parse = sinon.stub().returns({ scheme: 'tel', address: '+1-201-555-0123' });
+      var store = new Object();
+      store.set = sinon.stub().yieldsAsync(null);
+      var handler = factory(gateway, address, store);
+    
+      chai.express.use(handler)
+        .request(function(req, res) {
+          req.headers = {
+            'host': 'www.example.com'
+          }
+          req.body = {
+          };
+          req.session = {};
+          req.connection = { encrypted: true };
+        })
+        .next(function(err) {
+          expect(address.parse).to.not.have.been.called;
+          expect(gateway.challenge).to.not.have.been.called;
+          expect(store.set).to.not.have.been.called;
+          
+          expect(err).to.be.an.instanceOf(Error);
+          expect(err.status).to.equal(400);
+          expect(err.message).to.equal('Missing required parameter: address');
+          done();
+        })
+        .listen();
+    }); // should error when missing address parameter
+    
   }); // handler
   
 });
