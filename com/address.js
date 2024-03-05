@@ -8,8 +8,8 @@ exports = module.exports = function(parser) {
 };
 
 // Module annotations.
+exports['@implements'] = 'module:@authnomicon/oob/address';
 exports['@singleton'] = true;
-exports['@implements'] = 'module:@authnomicon/oob.address';
 exports['@require'] = [
   './address/parser'
 ];

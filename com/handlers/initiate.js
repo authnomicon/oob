@@ -36,6 +36,6 @@ exports = module.exports = function(gateway, Address, store) {
 
 exports['@require'] = [
   'module:@authnomicon/oob.Gateway',
-  '../address',
+  'module:@authnomicon/oob/address',
   'module:flowstate.Store'
 ];

@@ -34,7 +34,7 @@ describe('handlers/initiate', function() {
   
   describe('handler', function() {
     
-    it('should challenge', function(done) {
+    it('should challenge address', function(done) {
       var gateway = new Object();
       gateway.challenge = sinon.stub().yieldsAsync(null, { secret: '123456' });
       var address = new Object();
@@ -71,7 +71,7 @@ describe('handlers/initiate', function() {
           done();
         })
         .listen();
-    }); // should challenge
+    }); // should challenge address
     
   });
   

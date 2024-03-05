@@ -37,6 +37,7 @@
       "prompt",
       "service",
       "gateway",
+      "address",
       "crypto/secret",
       "address/email/parser",
       "address/phone"
