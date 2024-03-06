@@ -1,6 +1,8 @@
 // Module dependencies.
 var rand = require('rand-token')
   , httpErrors = require('http-errors');
+var path = require('path')
+  , ejs = require('ejs');
 
 var NUMERIC = '0123456789';
 
@@ -31,6 +33,9 @@ var defer = typeof setImmediate === 'function'
 exports = module.exports = function(channelFactory, Address, store) {
   
   function validate(req, res, next) {
+    if (req.body.code) { console.log('VERIFY CODE'); return next('route'); }
+    
+    
     //if (!req.body.address) { return next(new httpErrors.BadRequest('Missing required parameter: address')); }
     next();
   }
@@ -47,11 +52,30 @@ exports = module.exports = function(channelFactory, Address, store) {
           channel.transmit(addr.address, transport, secret, function(err, ctx) {
             if (err) { return defer(next, err); }
             
-            ctx.channel = addr.scheme;
-            ctx.address = addr.address;
-            ctx.secret = secret;
-            req.pushState(ctx, '/login/oob/verify');
-            res.redirect('/login/oob/verify');
+            req.state.secret = secret;
+            
+            res.locals.csrfToken = req.csrfToken();
+            
+            res.render('login/oob/challenge', function(err, str) {
+              if (err && err.view) {
+                var view = path.resolve(__dirname, '../views/challenge.ejs');
+                ejs.renderFile(view, res.locals, function(err, str) {
+                  if (err) { return next(err); }
+                  res.send(str);
+                });
+                return;
+              } else if (err) {
+                return next(err);
+              }
+              res.send(str);
+            });
+            
+            //ctx = ctx || {};
+            //ctx.channel = addr.scheme;
+            //ctx.address = addr.address;
+            //ctx.secret = secret;
+            //req.pushState(ctx, '/login/oob/verify');
+            //res.redirect('/login/oob/verify');
           });
         }
       }, function(err) {
@@ -81,7 +105,7 @@ exports = module.exports = function(channelFactory, Address, store) {
   
   return [
     require('body-parser').urlencoded({ extended: false }),
-    require('csurf')({ value: function(req){ return req.body && req.body.csrf_token; } }),
+    require('csurf')(),
     require('flowstate')({ store: store }),
     validate,
     initiate

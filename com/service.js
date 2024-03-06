@@ -24,9 +24,10 @@ exports = module.exports = function(promptHandler, initiateHandler, inputHandler
   //router.get('/', promptHandler);
   //router.post('/', initiateHandler);
   router.get('/', initiateHandler);
+  router.post('/', verifyHandler);
   
-  router.get('/verify', inputHandler);
-  router.post('/verify', verifyHandler);
+  //router.get('/verify', inputHandler);
+  //router.post('/verify', verifyHandler);
   // TODO: /confirm, transferHandler  Handler which displays the code for the user
   //.       to transfer to the out-of-band-device.
   // TODO: /confirm, confirmHandler Handler which confirms that authentication has
