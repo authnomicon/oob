@@ -48,10 +48,11 @@ exports = module.exports = function(channelFactory, Address, store) {
   
   function initiate(req, res, next) {
     var address = req.body.address || req.query.address
-      , transport = req.body.transport || req.query.transport;
+      , transport = req.body.transport || req.query.transport
+      , addr;
     
-    var addr = Address.parse(address);
-    channelFactory.create(addr.scheme)
+    if (address) { addr = Address.parse(address); }
+    channelFactory.create(addr && addr.scheme)
       .then(function(channel) {
         if (channel.transmit) {
           var secret = rand.generate(6, NUMERIC);
@@ -62,6 +63,7 @@ exports = module.exports = function(channelFactory, Address, store) {
             req.state.channel = addr.scheme;
             req.state.address = addr.address;
             if (ctx.transport) { req.state.transport = ctx.transport; }
+            // Store secret in state, to bind primary and secondary channels.
             req.state.secret = secret;
             
             res.locals.channel = addr.scheme;
@@ -88,6 +90,31 @@ exports = module.exports = function(channelFactory, Address, store) {
             //ctx.secret = secret;
             //req.pushState(ctx, '/login/oob/verify');
             //res.redirect('/login/oob/verify');
+          });
+        } else if (channel.present) {
+          var secret = rand.generate(6, NUMERIC);
+          channel.present(secret, function(err, ctx) {
+            if (err) { return defer(next, err); }
+            
+            // Store the transactionID in state, which is bound to the session.  This
+            // binds the primary and secondary channels.
+            req.state.transactionID = ctx.transactionID;
+            
+            res.locals.secret = secret;
+            res.locals.csrfToken = req.csrfToken();
+            res.render('login/oob', function(err, str) {
+              if (err && err.view) {
+                var view = path.resolve(__dirname, '../views/prompt.ejs');
+                ejs.renderFile(view, res.locals, function(err, str) {
+                  if (err) { return next(err); }
+                  res.send(str);
+                });
+                return;
+              } else if (err) {
+                return next(err);
+              }
+              res.send(str);
+            });
           });
         }
       }, function(err) {

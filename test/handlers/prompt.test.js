@@ -181,6 +181,47 @@ describe('handlers/prompt', function() {
         .listen();
     }); // should challenge email address
     
+    it('should challenge user to enter code into out-of-band device', function(done) {
+      var channel = new Object();
+      channel.present = sinon.stub().yieldsAsync(null, { transactionID: '123e4567-e89b-12d3-a456-426614174000' });
+      var channelFactory = new Object();
+      channelFactory.create = sinon.stub().resolves(channel);
+      var address = new Object();
+      address.parse = sinon.stub().returns();
+      var store = new Object();
+      store.set = sinon.stub().yieldsAsync(null);
+      var handler = factory(channelFactory, address, store);
+    
+      chai.express.use(handler)
+        .request(function(req, res) {
+          req.url = '/login/oob';
+          req.headers = {
+            'host': 'www.example.com'
+          }
+          req.session = {};
+          req.connection = { encrypted: true };
+        })
+        .finish(function() {
+          expect(address.parse).to.not.have.been.called;
+          expect(channelFactory.create).to.have.been.calledOnceWith(undefined);
+          expect(channel.present).to.have.been.calledOnceWith(this.locals.secret);
+          expect(store.set).to.have.been.calledOnce;
+          var state = store.set.getCall(0).args[2];
+          expect(state).to.deep.equal({
+            location: 'https://www.example.com/login/oob',
+            transactionID: '123e4567-e89b-12d3-a456-426614174000'
+          });
+          
+          expect(this).to.have.status(200);
+          expect(this).to.render('login/oob');
+          expect(this).to.include.locals([ 'secret', 'csrfToken' ]);
+          expect(this.locals.secret).to.have.length(6);
+          expect(this.locals.secret).to.match(/^[0-9]*$/);
+          done();
+        })
+        .listen();
+    }); // should challenge user to enter code into out-of-band authenticator
+    
     /*
     
     it('should challenge application to return secret displayed as text', function(done) {
