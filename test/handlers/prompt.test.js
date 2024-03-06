@@ -133,58 +133,20 @@ describe('handlers/prompt', function() {
         .listen();
     }); // should challenge telephone number via call by request
     
-    /*
-    it('should challenge telephone number via call by request', function(done) {
-      var gateway = new Object();
-      gateway.challenge = sinon.stub().yieldsAsync(null, { transport: 'call', secret: '123456' });
-      var address = new Object();
-      address.parse = sinon.stub().returns({ scheme: 'tel', address: '+1-201-555-0123' });
-      var store = new Object();
-      store.set = sinon.stub().yieldsAsync(null);
-      var handler = factory(gateway, address, store);
-    
-      chai.express.use(handler)
-        .request(function(req, res) {
-          req.headers = {
-            'host': 'www.example.com'
-          }
-          req.body = {
-            address: '201-555-0123',
-            transport: 'call'
-          };
-          req.session = {};
-          req.connection = { encrypted: true };
-        })
-        .finish(function() {
-          expect(address.parse).to.have.been.calledOnceWith('201-555-0123', 'call');
-          expect(gateway.challenge).to.have.been.calledOnceWith('tel', '+1-201-555-0123', 'call');
-          expect(store.set).to.have.been.calledOnce;
-          expect(store.set.getCall(0).args[2]).to.deep.equal({
-            location: 'https://www.example.com/login/oob/verify',
-            channel: 'tel',
-            address: '+1-201-555-0123',
-            transport: 'call',
-            secret: '123456'
-          });
-          
-          expect(this).to.have.status(302);
-          expect(this._headers['Location']).to.startWith('/login/oob/verify?');
-          done();
-        })
-        .listen();
-    }); // should challenge telephone number via call by request
-    
     it('should challenge email address', function(done) {
-      var gateway = new Object();
-      gateway.challenge = sinon.stub().yieldsAsync(null, { secret: '123456' });
+      var channel = new Object();
+      channel.transmit = sinon.stub().yieldsAsync(null);
+      var channelFactory = new Object();
+      channelFactory.create = sinon.stub().resolves(channel);
       var address = new Object();
       address.parse = sinon.stub().returns({ scheme: 'mailto', address: 'alice@example.com' });
       var store = new Object();
       store.set = sinon.stub().yieldsAsync(null);
-      var handler = factory(gateway, address, store);
+      var handler = factory(channelFactory, address, store);
     
       chai.express.use(handler)
         .request(function(req, res) {
+          req.url = '/login/oob';
           req.headers = {
             'host': 'www.example.com'
           }
@@ -195,22 +157,31 @@ describe('handlers/prompt', function() {
           req.connection = { encrypted: true };
         })
         .finish(function() {
-          expect(address.parse).to.have.been.calledOnceWith('alice@example.com', undefined);
-          expect(gateway.challenge).to.have.been.calledOnceWith('mailto', 'alice@example.com', undefined);
+          expect(address.parse).to.have.been.calledOnceWith('alice@example.com');
+          expect(channelFactory.create).to.have.been.calledOnceWith('mailto');
           expect(store.set).to.have.been.calledOnce;
-          expect(store.set.getCall(0).args[2]).to.deep.equal({
-            location: 'https://www.example.com/login/oob/verify',
+          var state = store.set.getCall(0).args[2];
+          expect(channel.transmit).to.have.been.calledOnceWith('alice@example.com', undefined, state.secret);
+          expect(state).to.deep.equal({
+            location: 'https://www.example.com/login/oob',
             channel: 'mailto',
             address: 'alice@example.com',
-            secret: '123456'
+            secret: state.secret
           });
+          expect(state.secret).to.have.length(6);
           
-          expect(this).to.have.status(302);
-          expect(this._headers['Location']).to.startWith('/login/oob/verify?');
+          expect(this).to.have.status(200);
+          expect(this).to.render('login/oob');
+          expect(this).to.include.locals([ 'channel', 'address', 'csrfToken' ]);
+          expect(this.locals.channel).to.equal('mailto');
+          expect(this.locals.address).to.equal('alice@example.com');
+          expect(this.locals.transport).to.be.undefined;
           done();
         })
         .listen();
     }); // should challenge email address
+    
+    /*
     
     it('should challenge application to return secret displayed as text', function(done) {
       var gateway = new Object();
