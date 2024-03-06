@@ -4,10 +4,10 @@ var expect = require('chai').expect;
 var chai = require('chai');
 var $require = require('proxyquire');
 var sinon = require('sinon');
-var factory = require('../../com/handlers/initiate');
+var factory = require('../../com/handlers/prompt');
 
 
-describe('handlers/initiate', function() {
+describe('handlers/prompt', function() {
   
   it('should create handler', function() {
     var bodyParserSpy = sinon.spy();
