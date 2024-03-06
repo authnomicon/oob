@@ -13,7 +13,7 @@ describe('handlers/prompt', function() {
     var bodyParserSpy = sinon.spy();
     var csurfSpy = sinon.spy();
     var flowstateSpy = sinon.spy();
-    var factory = $require('../../com/handlers/initiate', {
+    var factory = $require('../../com/handlers/prompt', {
       'body-parser': { urlencoded: bodyParserSpy },
       'csurf': csurfSpy,
       'flowstate': flowstateSpy
@@ -47,6 +47,7 @@ describe('handlers/prompt', function() {
     
       chai.express.use(handler)
         .request(function(req, res) {
+          req.url = '/login/oob';
           req.headers = {
             'host': 'www.example.com'
           }
@@ -63,7 +64,7 @@ describe('handlers/prompt', function() {
           var state = store.set.getCall(0).args[2];
           expect(channel.transmit).to.have.been.calledOnceWith('+1-201-555-0123', undefined, state.secret);
           expect(state).to.deep.equal({
-            location: 'https://www.example.com/login/oob/verify',
+            location: 'https://www.example.com/login/oob',
             channel: 'tel',
             address: '+1-201-555-0123',
             transport: 'sms',
@@ -71,8 +72,11 @@ describe('handlers/prompt', function() {
           });
           expect(state.secret).to.have.length(6);
           
-          expect(this).to.have.status(302);
-          expect(this._headers['Location']).to.startWith('/login/oob/verify?');
+          expect(this).to.have.status(200);
+          expect(this).to.render('login/oob');
+          expect(this).to.include.locals([ 'channel', 'address', 'csrfToken' ]);
+          expect(this.locals.channel).to.equal('tel');
+          expect(this.locals.address).to.equal('+1-201-555-0123');
           done();
         })
         .listen();

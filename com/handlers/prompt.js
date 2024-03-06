@@ -58,10 +58,15 @@ exports = module.exports = function(channelFactory, Address, store) {
           channel.transmit(addr.address, transport, secret, function(err, ctx) {
             if (err) { return defer(next, err); }
             
+            ctx = ctx || {};
+            req.state.channel = addr.scheme;
+            req.state.address = addr.address;
+            if (ctx.transport) { req.state.transport = ctx.transport; }
             req.state.secret = secret;
             
+            res.locals.channel = addr.scheme;
+            res.locals.address = addr.address;
             res.locals.csrfToken = req.csrfToken();
-            
             res.render('login/oob', function(err, str) {
               if (err && err.view) {
                 var view = path.resolve(__dirname, '../views/prompt.ejs');
