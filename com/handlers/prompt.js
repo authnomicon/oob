@@ -56,9 +56,9 @@ exports = module.exports = function(channelFactory, Address, store) {
             
             res.locals.csrfToken = req.csrfToken();
             
-            res.render('login/oob/challenge', function(err, str) {
+            res.render('login/oob', function(err, str) {
               if (err && err.view) {
-                var view = path.resolve(__dirname, '../views/challenge.ejs');
+                var view = path.resolve(__dirname, '../views/prompt.ejs');
                 ejs.renderFile(view, res.locals, function(err, str) {
                   if (err) { return next(err); }
                   res.send(str);

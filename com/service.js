@@ -19,11 +19,11 @@ var express = require('express');
  *          code received by the out-of-band device.
  * @returns {express.Router}
  */
-exports = module.exports = function(initiateHandler, inputHandler, verifyHandler) {
+exports = module.exports = function(promptHandler, inputHandler, verifyHandler) {
   var router = express.Router();
   //router.get('/', promptHandler);
   //router.post('/', initiateHandler);
-  router.get('/', initiateHandler);
+  router.get('/', promptHandler);
   router.post('/', verifyHandler);
   
   //router.get('/verify', inputHandler);
@@ -40,7 +40,7 @@ exports = module.exports = function(initiateHandler, inputHandler, verifyHandler
 exports['@implements'] = 'http://i.bixbyjs.org/http/Service';
 exports['@path'] = '/login/oob';
 exports['@require'] = [
-  './handlers/initiate',
+  './handlers/prompt',
   './handlers/input',
   './handlers/verify'
 ];
