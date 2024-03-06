@@ -66,6 +66,7 @@ exports = module.exports = function(channelFactory, Address, store) {
             
             res.locals.channel = addr.scheme;
             res.locals.address = addr.address;
+            if (ctx.transport) { res.locals.transport = ctx.transport; }
             res.locals.csrfToken = req.csrfToken();
             res.render('login/oob', function(err, str) {
               if (err && err.view) {
