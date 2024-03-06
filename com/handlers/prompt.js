@@ -11,20 +11,26 @@ var defer = typeof setImmediate === 'function'
   : function(fn){ process.nextTick(fn.bind.apply(fn, arguments)); };
 
 /**
- * Create out-of-band initiation handler.
+ * Create out-of-band challenge handler.
  *
- * Returns an HTTP handler that initiates out-of-band authentication via a
- * device associated with a given address.  The user will be prompted to perform
- * one of the following actions:
+ * Returns an HTTP handler that challenges the user to autenticate with an
+ * out-of-band device.  The challenge is rendered via HTML and the response
+ * will be submitted to either the `verify` or `wait` handler via an HTML form.
  *
- *   1. Input a code received by the out-of-band device into the web browser.
- *   2. Transfer a code displayed in the web browser to the out-of-band device.
- *   3. Approve their intent to authenticate in the out-of-band device,
- *      optionally after comparing a code displayed by both the web browser and
- *      the out-of-band device.
+ * Depending on the type of out-of-band authenticator, one of the following
+ * will take place:
  *
- * @param {@authnomicon/oob.Gateway} gateway - Gateway for challenging OOB
- *          devices.
+ *   1. A code will be transmitted to the out-of-band authenticator.  The user
+ *      will be prompted to enter this code into their web browser.
+ *   2. A code will be displayed to the user in their web browser.  The user
+ *      will be prompted to enter this code into their out-of-band device.
+ *   3. The user will be prompted to approve their login attempt on their out-
+ *      of-band device.  Optionally, a code may be displayed to the user on both
+ *      their web browser and out-of-band device, which the user can compare
+ *      before approval.
+ *
+ * @param {@authnomicon/oob.ChannelFactory} channelFactory - Factory which
+ *          creates channels for challenging out-of-band authenticators.
  * @param {@authnomicon/oob/address} address - Module providing utilities for
  *          address parsing.
  * @param {flowstate.Store} store - Per-request state store.
