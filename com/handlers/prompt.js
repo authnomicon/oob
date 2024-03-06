@@ -83,13 +83,6 @@ exports = module.exports = function(channelFactory, Address, store) {
               }
               res.send(str);
             });
-            
-            //ctx = ctx || {};
-            //ctx.channel = addr.scheme;
-            //ctx.address = addr.address;
-            //ctx.secret = secret;
-            //req.pushState(ctx, '/login/oob/verify');
-            //res.redirect('/login/oob/verify');
           });
         } else if (channel.present) {
           var secret = rand.generate(6, NUMERIC);
