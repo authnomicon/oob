@@ -15,7 +15,9 @@ exports = module.exports = function(scheme, authenticator, store) {
   return [
     require('body-parser').urlencoded({ extended: false }),
     require('csurf')({ value: function(req){ return req.body && req.body.csrf_token; } }),
+    // TODO: flag state as required
     require('flowstate')({ store: store }),
+    // TODO: add a "secondary channel" authentication scheme here
     authenticator.authenticate(scheme),
     resume,
     redirect
