@@ -118,25 +118,6 @@ exports = module.exports = function(channelFactory, Address, store) {
       }, function(err) {
         defer(next, err);
       });
-    
-    
-    /*
-    var addr = Address.parse(address, transport);
-    gateway.challenge(addr.scheme, addr.address, transport, function(err, ctx) {
-      if (err) { return next(err); }
-      
-      ctx.channel = addr.scheme;
-      ctx.address = addr.address;
-      
-      if (!ctx.transactionID) {
-        req.pushState(ctx, '/login/oob/verify');
-        res.redirect('/login/oob/verify');
-      } else {
-        req.pushState(ctx, '/login/oob/confirm');
-        res.redirect('/login/oob/confirm');
-      }
-    });
-    */
   }
   
   
