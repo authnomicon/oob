@@ -76,7 +76,7 @@ exports = module.exports = function(channelFactory, Address, store) {
               res.send(str);
             });
           });
-        } else if (channel.present) {
+        } else {
           function presenter(secret) {
             return function(err, ctx) {
               if (err) { return defer(next, err); }
