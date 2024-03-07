@@ -1,10 +1,14 @@
 exports = module.exports = function(scheme, authenticator, store) {
   
-  function verify(req, res, next) {
-    console.log('verify code....');
-    console.log(req.body);
+  function resume(req, res, next) {
+    res.resumeState(next);
+  }
+  
+  function redirect(req, res, next) {
+    // TODO: Add an optional service that will be injected here which determines
+    // the default application, and how to redirect to it (OpenID IdP init, etc)
     
-    //res.redirect('/login/oob/verify');
+    res.redirect('/');
   }
   
   
@@ -13,7 +17,8 @@ exports = module.exports = function(scheme, authenticator, store) {
     require('csurf')({ value: function(req){ return req.body && req.body.csrf_token; } }),
     require('flowstate')({ store: store }),
     authenticator.authenticate(scheme),
-    verify
+    resume,
+    redirect
   ];
 };
 
