@@ -56,7 +56,8 @@
     "flowstate": "^0.6.0",
     "google-libphonenumber": "^3.2.34",
     "http-errors": "^2.0.0",
-    "rand-token": "^1.0.1"
+    "rand-token": "^1.0.1",
+    "utils-merge": "^1.0.1"
   },
   "devDependencies": {
     "chai": "^4.3.4",

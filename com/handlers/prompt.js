@@ -2,7 +2,8 @@
 var rand = require('rand-token')
   , httpErrors = require('http-errors');
 var path = require('path')
-  , ejs = require('ejs');
+  , ejs = require('ejs')
+  , merge = require('utils-merge');
 
 var NUMERIC = '0123456789';
 
@@ -85,30 +86,44 @@ exports = module.exports = function(channelFactory, Address, store) {
             });
           });
         } else if (channel.present) {
-          var secret = rand.generate(6, NUMERIC);
-          channel.present(secret, function(err, ctx) {
-            if (err) { return defer(next, err); }
+          function presenter(secret) {
+            return function(err, ctx) {
+              if (err) { return defer(next, err); }
             
-            // Store the transactionID in state, which is bound to the session.  This
-            // binds the primary and secondary channels.
-            req.state.transactionID = ctx.transactionID;
+              // TODO: err if not ctx.transactionID
             
-            res.locals.secret = secret;
-            res.locals.csrfToken = req.csrfToken();
-            res.render('login/oob', function(err, str) {
-              if (err && err.view) {
-                var view = path.resolve(__dirname, '../views/prompt.ejs');
-                ejs.renderFile(view, res.locals, function(err, str) {
-                  if (err) { return next(err); }
-                  res.send(str);
-                });
-                return;
-              } else if (err) {
-                return next(err);
-              }
-              res.send(str);
-            });
-          });
+              // Store the transactionID in state, which is bound to the session.  This
+              // binds the primary and secondary channels.
+              //req.state.transactionID = ctx.transactionID;
+              merge(req.state, ctx);
+            
+              merge(res.locals, ctx);
+              if (secret) { res.locals.secret = secret; }
+              res.locals.csrfToken = req.csrfToken();
+              res.render('login/oob', function(err, str) {
+                if (err && err.view) {
+                  var view = path.resolve(__dirname, '../views/prompt.ejs');
+                  ejs.renderFile(view, res.locals, function(err, str) {
+                    if (err) { return next(err); }
+                    res.send(str);
+                  });
+                  return;
+                } else if (err) {
+                  return next(err);
+                }
+                res.send(str);
+              });
+            };
+          }
+          
+          var arity = channel.present.length;
+          switch (arity) {
+          case 2:
+            var secret = rand.generate(6, NUMERIC);
+            return channel.present(secret, presenter(secret));
+          case 1:
+            return channel.present(presenter());
+          }
         }
       }, function(err) {
         defer(next, err);

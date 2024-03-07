@@ -71,6 +71,7 @@ describe('handlers/prompt', function() {
             secret: state.secret
           });
           expect(state.secret).to.have.length(6);
+          expect(state.secret).to.match(/^[0-9]*$/);
           
           expect(this).to.have.status(200);
           expect(this).to.render('login/oob');
@@ -121,6 +122,7 @@ describe('handlers/prompt', function() {
             secret: state.secret
           });
           expect(state.secret).to.have.length(6);
+          expect(state.secret).to.match(/^[0-9]*$/);
           
           expect(this).to.have.status(200);
           expect(this).to.render('login/oob');
@@ -169,6 +171,7 @@ describe('handlers/prompt', function() {
             secret: state.secret
           });
           expect(state.secret).to.have.length(6);
+          expect(state.secret).to.match(/^[0-9]*$/);
           
           expect(this).to.have.status(200);
           expect(this).to.render('login/oob');
@@ -183,7 +186,11 @@ describe('handlers/prompt', function() {
     
     it('should challenge user to enter code into out-of-band device', function(done) {
       var channel = new Object();
-      channel.present = sinon.stub().yieldsAsync(null, { transactionID: '123e4567-e89b-12d3-a456-426614174000' });
+      channel.present = sinon.spy(function(secret, cb) {
+        process.nextTick(function() {
+          cb(null, { transactionID: '123e4567-e89b-12d3-a456-426614174000' });
+        });
+      });
       var channelFactory = new Object();
       channelFactory.create = sinon.stub().resolves(channel);
       var address = new Object();
@@ -214,7 +221,8 @@ describe('handlers/prompt', function() {
           
           expect(this).to.have.status(200);
           expect(this).to.render('login/oob');
-          expect(this).to.include.locals([ 'secret', 'csrfToken' ]);
+          expect(this).to.include.locals([ 'transactionID', 'secret', 'csrfToken' ]);
+          expect(this.locals.transactionID).to.equal('123e4567-e89b-12d3-a456-426614174000');
           expect(this.locals.secret).to.have.length(6);
           expect(this.locals.secret).to.match(/^[0-9]*$/);
           done();
@@ -222,87 +230,54 @@ describe('handlers/prompt', function() {
         .listen();
     }); // should challenge user to enter code into out-of-band authenticator
     
-    /*
-    
-    it('should challenge application to return secret displayed as text', function(done) {
-      var gateway = new Object();
-      gateway.challenge = sinon.stub().yieldsAsync(null, { transactionID: '00000000-0000-0000-0000-000000000000', secret: '123456' });
+    it('should challenge user to scan QR code with out-of-band device', function(done) {
+      var channel = new Object();
+      channel.present = sinon.spy(function(cb) {
+        process.nextTick(function() {
+          cb(null, { transactionID: '123e4567-e89b-12d3-a456-426614174000', qrCode: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAgAAZABkAAD' });
+        });
+      });
+      var channelFactory = new Object();
+      channelFactory.create = sinon.stub().resolves(channel);
       var address = new Object();
-      address.parse = sinon.stub().returns({ scheme: 'acct', address: 'alice@example.com' });
+      address.parse = sinon.stub().returns();
       var store = new Object();
       store.set = sinon.stub().yieldsAsync(null);
-      var handler = factory(gateway, address, store);
+      var handler = factory(channelFactory, address, store);
     
       chai.express.use(handler)
         .request(function(req, res) {
+          req.url = '/login/oob';
           req.headers = {
             'host': 'www.example.com'
           }
-          req.body = {
-            address: 'alice'
-          };
           req.session = {};
           req.connection = { encrypted: true };
         })
         .finish(function() {
-          expect(address.parse).to.have.been.calledOnceWith('alice', undefined);
-          expect(gateway.challenge).to.have.been.calledOnceWith('acct', 'alice@example.com', undefined);
+          expect(address.parse).to.not.have.been.called;
+          expect(channelFactory.create).to.have.been.calledOnceWith(undefined);
+          expect(channel.present).to.have.been.calledOnce;
           expect(store.set).to.have.been.calledOnce;
-          expect(store.set.getCall(0).args[2]).to.deep.equal({
-            location: 'https://www.example.com/login/oob/confirm',
-            channel: 'acct',
-            address: 'alice@example.com',
-            transactionID: '00000000-0000-0000-0000-000000000000',
-            secret: '123456'
-          });
-          
-          expect(this).to.have.status(302);
-          expect(this._headers['Location']).to.startWith('/login/oob/confirm?');
-          done();
-        })
-        .listen();
-    }); // should challenge application to return secret displayed as text
-    
-    it('should challenge application to return secret displayed as text and QR code', function(done) {
-      var gateway = new Object();
-      gateway.challenge = sinon.stub().yieldsAsync(null, { transactionID: '00000000-0000-0000-0000-000000000000', secret: '123456', qrCode: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAgAAZABkAAD' });
-      var address = new Object();
-      address.parse = sinon.stub().returns({ scheme: 'acct', address: 'alice@example.com' });
-      var store = new Object();
-      store.set = sinon.stub().yieldsAsync(null);
-      var handler = factory(gateway, address, store);
-    
-      chai.express.use(handler)
-        .request(function(req, res) {
-          req.headers = {
-            'host': 'www.example.com'
-          }
-          req.body = {
-            address: 'alice'
-          };
-          req.session = {};
-          req.connection = { encrypted: true };
-        })
-        .finish(function() {
-          expect(address.parse).to.have.been.calledOnceWith('alice', undefined);
-          expect(gateway.challenge).to.have.been.calledOnceWith('acct', 'alice@example.com', undefined);
-          expect(store.set).to.have.been.calledOnce;
-          expect(store.set.getCall(0).args[2]).to.deep.equal({
-            location: 'https://www.example.com/login/oob/confirm',
-            channel: 'acct',
-            address: 'alice@example.com',
-            transactionID: '00000000-0000-0000-0000-000000000000',
-            secret: '123456',
+          var state = store.set.getCall(0).args[2];
+          expect(state).to.deep.equal({
+            location: 'https://www.example.com/login/oob',
+            transactionID: '123e4567-e89b-12d3-a456-426614174000',
             qrCode: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAgAAZABkAAD'
           });
           
-          expect(this).to.have.status(302);
-          expect(this._headers['Location']).to.startWith('/login/oob/confirm?');
+          expect(this).to.have.status(200);
+          expect(this).to.render('login/oob');
+          expect(this).to.include.locals([ 'transactionID', 'qrCode', 'csrfToken' ]);
+          expect(this.locals.transactionID).to.equal('123e4567-e89b-12d3-a456-426614174000');
+          expect(this.locals.qrCode).to.equal('data:image/jpeg;base64,/9j/4AAQSkZJRgABAgAAZABkAAD');
+          expect(this.locals.secret).to.be.undefined;
           done();
         })
         .listen();
-    }); // should challenge application to return secret displayed as text and QR code
+    }); // should challenge user to scan QR code with out-of-band device
     
+    /*
     it('should challenge application to approve transaction', function(done) {
       var gateway = new Object();
       gateway.challenge = sinon.stub().yieldsAsync(null, { transactionID: '00000000-0000-0000-0000-000000000000' });
