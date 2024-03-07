@@ -262,8 +262,7 @@ describe('handlers/prompt', function() {
           var state = store.set.getCall(0).args[2];
           expect(state).to.deep.equal({
             location: 'https://www.example.com/login/oob',
-            transactionID: '123e4567-e89b-12d3-a456-426614174000',
-            qrCode: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAgAAZABkAAD'
+            transactionID: '123e4567-e89b-12d3-a456-426614174000'
           });
           
           expect(this).to.have.status(200);

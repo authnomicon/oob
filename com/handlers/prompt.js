@@ -94,8 +94,7 @@ exports = module.exports = function(channelFactory, Address, store) {
             
               // Store the transactionID in state, which is bound to the session.  This
               // binds the primary and secondary channels.
-              //req.state.transactionID = ctx.transactionID;
-              merge(req.state, ctx);
+              req.state.transactionID = ctx.transactionID;
             
               merge(res.locals, ctx);
               if (secret) { res.locals.secret = secret; }
