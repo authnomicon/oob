@@ -10,7 +10,6 @@ var factory = require('../../com/handlers/prompt');
 describe('handlers/prompt', function() {
   
   it('should create handler', function() {
-    var bodyParserSpy = sinon.spy();
     var csurfSpy = sinon.spy();
     var flowstateSpy = sinon.spy();
     var factory = $require('../../com/handlers/prompt', {
