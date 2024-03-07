@@ -276,18 +276,20 @@ describe('handlers/prompt', function() {
         .listen();
     }); // should challenge user to scan QR code with out-of-band device
     
-    /*
-    it('should error when gateway encounters an error', function(done) {
-      var gateway = new Object();
-      gateway.challenge = sinon.stub().yieldsAsync(new Error('something went wrong'));
+    it('should error when channel transmit encounters an error', function(done) {
+      var channel = new Object();
+      channel.transmit = sinon.stub().yieldsAsync(new Error('something went wrong'));
+      var channelFactory = new Object();
+      channelFactory.create = sinon.stub().resolves(channel);
       var address = new Object();
       address.parse = sinon.stub().returns({ scheme: 'tel', address: '+1-201-555-0123' });
       var store = new Object();
       store.set = sinon.stub().yieldsAsync(null);
-      var handler = factory(gateway, address, store);
+      var handler = factory(channelFactory, address, store);
     
       chai.express.use(handler)
         .request(function(req, res) {
+          req.url = '/login/oob';
           req.headers = {
             'host': 'www.example.com'
           }
@@ -298,8 +300,9 @@ describe('handlers/prompt', function() {
           req.connection = { encrypted: true };
         })
         .next(function(err) {
-          expect(address.parse).to.have.been.calledOnceWith('201-555-0123', undefined);
-          expect(gateway.challenge).to.have.been.calledOnceWith('tel', '+1-201-555-0123', undefined);
+          expect(address.parse).to.have.been.calledOnceWith('201-555-0123');
+          expect(channelFactory.create).to.have.been.calledOnceWith('tel');
+          expect(channel.transmit).to.have.been.calledOnceWith('+1-201-555-0123', undefined);
           expect(store.set).to.not.have.been.called;
           
           expect(err).to.be.an.instanceOf(Error);
@@ -307,7 +310,9 @@ describe('handlers/prompt', function() {
           done();
         })
         .listen();
-    }); // should error when gateway encounters an error
+    });
+    
+    /*
     
     it('should error when missing address parameter', function(done) {
       var gateway = new Object();
