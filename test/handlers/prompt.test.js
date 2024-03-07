@@ -277,44 +277,6 @@ describe('handlers/prompt', function() {
     }); // should challenge user to scan QR code with out-of-band device
     
     /*
-    it('should challenge application to approve transaction', function(done) {
-      var gateway = new Object();
-      gateway.challenge = sinon.stub().yieldsAsync(null, { transactionID: '00000000-0000-0000-0000-000000000000' });
-      var address = new Object();
-      address.parse = sinon.stub().returns({ scheme: 'acct', address: 'alice@example.com' });
-      var store = new Object();
-      store.set = sinon.stub().yieldsAsync(null);
-      var handler = factory(gateway, address, store);
-    
-      chai.express.use(handler)
-        .request(function(req, res) {
-          req.headers = {
-            'host': 'www.example.com'
-          }
-          req.body = {
-            address: 'alice'
-          };
-          req.session = {};
-          req.connection = { encrypted: true };
-        })
-        .finish(function() {
-          expect(address.parse).to.have.been.calledOnceWith('alice', undefined);
-          expect(gateway.challenge).to.have.been.calledOnceWith('acct', 'alice@example.com', undefined);
-          expect(store.set).to.have.been.calledOnce;
-          expect(store.set.getCall(0).args[2]).to.deep.equal({
-            location: 'https://www.example.com/login/oob/confirm',
-            channel: 'acct',
-            address: 'alice@example.com',
-            transactionID: '00000000-0000-0000-0000-000000000000'
-          });
-          
-          expect(this).to.have.status(302);
-          expect(this._headers['Location']).to.startWith('/login/oob/confirm?');
-          done();
-        })
-        .listen();
-    }); // should challenge application to approve transaction
-    
     it('should error when gateway encounters an error', function(done) {
       var gateway = new Object();
       gateway.challenge = sinon.stub().yieldsAsync(new Error('something went wrong'));
