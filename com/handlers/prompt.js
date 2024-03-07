@@ -111,7 +111,7 @@ exports = module.exports = function(channelFactory, Address, store) {
           case 2:
             var secret = rand.generate(6, NUMERIC);
             return channel.present(secret, presenter(secret));
-          case 1:
+          default:
             return channel.present(presenter());
           }
         }

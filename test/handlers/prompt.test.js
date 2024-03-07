@@ -306,42 +306,40 @@ describe('handlers/prompt', function() {
           done();
         })
         .listen();
-    });
+    }); // should error when channel transmit encounters an error
     
-    /*
-    
-    it('should error when missing address parameter', function(done) {
-      var gateway = new Object();
-      gateway.challenge = sinon.stub().yieldsAsync(null, { transport: 'sms', secret: '123456' });
+    it('should error when channel present encounters an error', function(done) {
+      var channel = new Object();
+      channel.present = sinon.stub().yieldsAsync(new Error('something went wrong'));
+      var channelFactory = new Object();
+      channelFactory.create = sinon.stub().resolves(channel);
       var address = new Object();
-      address.parse = sinon.stub().returns({ scheme: 'tel', address: '+1-201-555-0123' });
+      address.parse = sinon.stub().returns();
       var store = new Object();
       store.set = sinon.stub().yieldsAsync(null);
-      var handler = factory(gateway, address, store);
+      var handler = factory(channelFactory, address, store);
     
       chai.express.use(handler)
         .request(function(req, res) {
+          req.url = '/login/oob';
           req.headers = {
             'host': 'www.example.com'
           }
-          req.body = {
-          };
           req.session = {};
           req.connection = { encrypted: true };
         })
         .next(function(err) {
           expect(address.parse).to.not.have.been.called;
-          expect(gateway.challenge).to.not.have.been.called;
+          expect(channelFactory.create).to.have.been.calledOnceWith(undefined);
+          expect(channel.present).to.have.been.calledOnce;
           expect(store.set).to.not.have.been.called;
           
           expect(err).to.be.an.instanceOf(Error);
-          expect(err.status).to.equal(400);
-          expect(err.message).to.equal('Missing required parameter: address');
+          expect(err.message).to.equal('something went wrong');
           done();
         })
         .listen();
-    }); // should error when missing address parameter
-    */
+    }); // should error when channel present encounters an error
     
   }); // handler
   
