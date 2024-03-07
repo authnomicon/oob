@@ -13,11 +13,9 @@ describe('service', function() {
   
   it('should create service', function() {
     function promptHandler() {};
-    function initiateHandler() {};
-    function challengeHandler() {};
     function verifyHandler() {};
   
-    var service = factory(promptHandler, initiateHandler, challengeHandler, verifyHandler);
+    var service = factory(promptHandler, verifyHandler);
     
     expect(service).to.be.a('function');
     expect(service.length).to.equal(3);
