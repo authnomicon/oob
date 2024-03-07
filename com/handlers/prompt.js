@@ -1,9 +1,8 @@
 // Module dependencies.
 var rand = require('rand-token')
-  , httpErrors = require('http-errors');
-var path = require('path')
-  , ejs = require('ejs')
-  , merge = require('utils-merge');
+  , merge = require('utils-merge')
+  , path = require('path')
+  , ejs = require('ejs');
 
 var NUMERIC = '0123456789';
 
@@ -16,7 +15,7 @@ var defer = typeof setImmediate === 'function'
  *
  * Returns an HTTP handler that challenges the user to autenticate with an
  * out-of-band device.  The challenge is rendered via HTML and the response
- * will be submitted to either the `verify` or `wait` handler via an HTML form.
+ * will be submitted to the `verify` handler via an HTML form.
  *
  * Depending on the type of out-of-band authenticator, one of the following
  * will take place:
@@ -39,17 +38,9 @@ var defer = typeof setImmediate === 'function'
  */
 exports = module.exports = function(channelFactory, Address, store) {
   
-  function validate(req, res, next) {
-    if (req.body.code) { console.log('VERIFY CODE'); return next('route'); }
-    
-    
-    //if (!req.body.address) { return next(new httpErrors.BadRequest('Missing required parameter: address')); }
-    next();
-  }
-  
   function initiate(req, res, next) {
-    var address = req.body.address || req.query.address
-      , transport = req.body.transport || req.query.transport
+    var address = req.query.address
+      , transport = req.query.transport
       , addr;
     
     if (address) { addr = Address.parse(address); }
@@ -150,10 +141,8 @@ exports = module.exports = function(channelFactory, Address, store) {
   
   
   return [
-    require('body-parser').urlencoded({ extended: false }),
     require('csurf')(),
     require('flowstate')({ store: store }),
-    validate,
     initiate
   ];
 };

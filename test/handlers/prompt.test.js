@@ -14,7 +14,6 @@ describe('handlers/prompt', function() {
     var csurfSpy = sinon.spy();
     var flowstateSpy = sinon.spy();
     var factory = $require('../../com/handlers/prompt', {
-      'body-parser': { urlencoded: bodyParserSpy },
       'csurf': csurfSpy,
       'flowstate': flowstateSpy
     });
@@ -23,9 +22,6 @@ describe('handlers/prompt', function() {
     var handler = factory(undefined, undefined, store);
     
     expect(handler).to.be.an('array');
-    expect(bodyParserSpy).to.be.calledOnce;
-    expect(bodyParserSpy).to.be.calledBefore(csurfSpy);
-    expect(bodyParserSpy).to.be.calledWith({ extended: false });
     expect(csurfSpy).to.be.calledOnce;
     expect(csurfSpy).to.be.calledBefore(flowstateSpy);
     expect(flowstateSpy).to.be.calledOnce;
@@ -51,7 +47,7 @@ describe('handlers/prompt', function() {
           req.headers = {
             'host': 'www.example.com'
           }
-          req.body = {
+          req.query = {
             address: '201-555-0123'
           };
           req.session = {};
@@ -101,7 +97,7 @@ describe('handlers/prompt', function() {
           req.headers = {
             'host': 'www.example.com'
           }
-          req.body = {
+          req.query = {
             address: '201-555-0123',
             transport: 'call'
           };
@@ -152,7 +148,7 @@ describe('handlers/prompt', function() {
           req.headers = {
             'host': 'www.example.com'
           }
-          req.body = {
+          req.query = {
             address: 'alice@example.com'
           };
           req.session = {};
@@ -293,7 +289,7 @@ describe('handlers/prompt', function() {
           req.headers = {
             'host': 'www.example.com'
           }
-          req.body = {
+          req.query = {
             address: '201-555-0123'
           };
           req.session = {};
