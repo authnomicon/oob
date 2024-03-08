@@ -37,6 +37,7 @@
       "prompt",
       "service",
       "channelfactory",
+      "addressstorefactory",
       "address",
       "crypto/secret",
       "address/email/parser",

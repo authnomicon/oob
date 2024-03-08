@@ -1,22 +1,46 @@
+// Module dependencies.
 var Strategy = require('passport-oob');
 
-exports = module.exports = function(oobGateway, Address) {
+var defer = typeof setImmediate === 'function'
+  ? setImmediate
+  : function(fn){ process.nextTick(fn.bind.apply(fn, arguments)); };
+
+exports = module.exports = function(addressStoreFactory, Address) {
   
   return new Strategy({
     verifyURL: '/login/oob/verify'
-  }, function verify(address, transport, ctx, code, cb) {
+  }, function verify(address, transport, channel, cb) {
     
     console.log('verify oob...');
     console.log(address);
     console.log(transport);
-    console.log(code);
-    console.log(ctx);
+    console.log(channel);
+    
+    addressStoreFactory.create(channel)
+      .then(function(store) {
+      }, function(err) {
+        defer(cb, err);
+      });
+    
+    
+    /*
+    addressStore.find(address, channel, function(err, user) {
+      console.log('FOUND USER');
+      console.log(err);
+      console.log(user);
+      
+      if (!user) {
+        
+      } else {
+        return cb(null, user);
+      }
+      
+    });
+    */
   });
 };
 
 // Module annotations.
 exports['@require'] = [
-  'module:@authnomicon/oob.ChannelFactory',
-  './address'
-  //'module:@authnomicon/core.Directory'
+  'module:@authnomicon/credentials.OOBAddressStoreFactory'
 ];
