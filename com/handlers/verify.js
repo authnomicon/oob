@@ -1,4 +1,100 @@
-exports = module.exports = function(scheme, authenticator, store) {
+var defer = typeof setImmediate === 'function'
+  ? setImmediate
+  : function(fn){ process.nextTick(fn.bind.apply(fn, arguments)); };
+
+exports = module.exports = function(storeFactory, directory, scheme, authenticator, store) {
+  
+  function login(req, res, next) {
+    console.log('LOGIN THE OOB ADDRESS');
+    console.log(req.oobUser);
+    console.log(req.authInfo);
+    
+    storeFactory.create(req.oobUser.channel)
+      .then(function(store) {
+        console.log('CHECK THE STORE!');
+        
+        store.find(req.oobUser.address, function(err, user) {
+          if (err) { return next(err); }
+          
+          if (!user) {
+            // JIT the user
+            console.log('JIT IT!');
+            
+            // TODO: make this more generic
+            
+            var u = {
+              emails: [ { value: req.oobUser.address } ]
+            };
+            
+            directory.create(u, function(err, user) {
+              if (err) { return next(err); }
+              
+              console.log('CREATED!');
+              console.log(user);
+              
+              store.add(req.oobUser.address, user, function(err) {
+                if (err) { return next(err); }
+            
+                console.log('ADDED ADDRESS, logging in');
+            
+                req.login(user, function(err) {
+                  if (err) { return next(err); }
+                  return next();
+                });
+              });
+              
+            });
+            
+          } else {
+            console.log('exists!');
+            directory.read(user.id, function(err, user) {
+              if (err) { return next(err); }
+              // TODO: Handle undefined user
+          
+              console.log('read user');
+              console.log(user);
+          
+              //return;
+          
+              req.login(user, function(err) {
+                if (err) { return next(err); }
+                return next();
+              });
+            });
+          }
+        });
+      }, function(err) {
+        defer(next, err);
+      });
+    
+    
+    /*
+    addressStoreFactory.create(channel)
+      .then(function(store) {
+        console.log('CHECK THE STORE!');
+        
+      }, function(err) {
+        defer(cb, err);
+      });
+    */
+    
+    /*
+    addressStore.find(address, channel, function(err, user) {
+      console.log('FOUND USER');
+      console.log(err);
+      console.log(user);
+      
+      if (!user) {
+        
+      } else {
+        return cb(null, user);
+      }
+      
+    });
+    */
+    
+   // next();
+  }
   
   function resume(req, res, next) {
     res.resumeState(next);
@@ -18,13 +114,16 @@ exports = module.exports = function(scheme, authenticator, store) {
     // TODO: flag state as required
     require('flowstate')({ store: store }),
     // TODO: add a "secondary channel" authentication scheme here
-    authenticator.authenticate(scheme),
+    authenticator.authenticate(scheme, { assignProperty: 'oobUser' }),
+    login,
     resume,
     redirect
   ];
 };
 
 exports['@require'] = [
+  'module:@authnomicon/credentials.OOBAddressStoreFactory',
+  'module:@authnomicon/core.Directory',
   '../scheme',
   'module:passport.Authenticator',
   'module:flowstate.Store'
