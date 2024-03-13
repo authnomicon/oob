@@ -80,12 +80,6 @@ describe('handlers/verify', function() {
           req.connection = {};
         })
         .finish(function() {
-          //expect(this.req.user).to.deep.equal({
-          //  id: '248289761001',
-          //  displayName: 'Jane Doe'
-          //});
-          
-          
           expect(storeFactory.create).to.have.been.calledOnceWith('tel');
           expect(store.find).to.have.been.calledOnceWith('+1-201-555-0123');
           expect(directory.create).to.have.been.calledOnceWith(
@@ -111,13 +105,34 @@ describe('handlers/verify', function() {
           done();
         })
         .listen();
-    }); // should resume state if available
+    }); // should provision user, log in, and resume state
     
-    it.skip('should redirect as final handler', function(done) {
-      var handler = factory(undefined, mockAuthenticator, noopStateStore);
+    it('should provision user, log in, and redirect', function(done) {
+      var store = new Object();
+      store.find = sinon.stub().yieldsAsync(null);
+      store.add = sinon.stub().yieldsAsync(null);
+      var storeFactory = new Object();
+      storeFactory.create = sinon.stub().resolves(store);
+      var directory = new Object();
+      directory.create = sinon.stub().yieldsAsync(null, {
+        id: '703887',
+        displayName: 'Jane Doe'
+      });
+      directory.read = sinon.spy();
+      var authenticator = new Object();
+      authenticator.authenticate = function(name, options) {
+        return function(req, res, next) {
+          req.oobUser = { channel: 'tel', address: '+1-201-555-0123' };
+          next();
+        };
+      };
+      
+      var handler = factory(storeFactory, directory, undefined, authenticator, noopStateStore);
       
       chai.express.use(handler)
         .request(function(req, res) {
+          req.login = sinon.stub().yieldsAsync(null);
+          
           req.method = 'POST';
           req.body = {
             code: '123456',
@@ -129,8 +144,23 @@ describe('handlers/verify', function() {
           req.connection = {};
         })
         .finish(function() {
-          expect(this.req.user).to.deep.equal({
-            id: '248289761001',
+          expect(storeFactory.create).to.have.been.calledOnceWith('tel');
+          expect(store.find).to.have.been.calledOnceWith('+1-201-555-0123');
+          expect(directory.create).to.have.been.calledOnceWith(
+            {
+              emails: [ { value: '+1-201-555-0123' } ]
+            }
+          );
+          expect(store.add).to.have.been.calledOnceWith(
+            '+1-201-555-0123',
+            {
+              id: '703887',
+              displayName: 'Jane Doe'
+            }
+          );
+          expect(directory.read).to.not.have.been.called;
+          expect(this.req.login).to.have.been.calledOnceWith({
+            id: '703887',
             displayName: 'Jane Doe'
           });
           
@@ -139,7 +169,7 @@ describe('handlers/verify', function() {
           done();
         })
         .listen();
-    }); // should redirect as final handler
+    }); // should provision user, log in, and redirect
     
   }); // handler
   
