@@ -5,23 +5,15 @@ var defer = typeof setImmediate === 'function'
 exports = module.exports = function(storeFactory, directory, scheme, authenticator, store) {
   
   function login(req, res, next) {
-    console.log('LOGIN THE OOB ADDRESS');
-    console.log(req.oobUser);
-    console.log(req.authInfo);
-    
     storeFactory.create(req.oobUser.channel)
       .then(function(store) {
-        console.log('CHECK THE STORE!');
-        
         store.find(req.oobUser.address, function(err, user) {
           if (err) { return next(err); }
           
           if (!user) {
             // JIT the user
-            console.log('JIT IT!');
             
             // TODO: make this more generic
-            
             var u = {
               emails: [ { value: req.oobUser.address } ]
             };
@@ -29,22 +21,15 @@ exports = module.exports = function(storeFactory, directory, scheme, authenticat
             directory.create(u, function(err, user) {
               if (err) { return next(err); }
               
-              console.log('CREATED!');
-              console.log(user);
-              
               store.add(req.oobUser.address, user, function(err) {
                 if (err) { return next(err); }
-            
-                console.log('ADDED ADDRESS, logging in');
-            
+                
                 req.login(user, function(err) {
                   if (err) { return next(err); }
                   return next();
                 });
               });
-              
             });
-            
           } else {
             console.log('exists!');
             directory.read(user.id, function(err, user) {
