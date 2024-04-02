@@ -43,8 +43,7 @@
       "channels/mailto/profile",
       "channels/tel/address",
       "channels/tel/profile",
-      "address",
-      "crypto/secret"
+      "address"
     ]
   },
   "directories": {

@@ -1,8 +1,8 @@
 var ChannelFactory = require('../lib/channelfactory');
 
 
-exports = module.exports = function(C, randomSecret, logger) {
-  var gateway = new ChannelFactory(randomSecret);
+exports = module.exports = function(C, logger) {
+  var gateway = new ChannelFactory();
   
   return Promise.resolve(gateway)
     .then(function(gateway) {
@@ -39,6 +39,5 @@ exports['@implements'] = 'module:@authnomicon/oob.ChannelFactory';
 exports['@singleton'] = true;
 exports['@require'] = [
   '!container',
-  'module:@authnomicon/oob.randomSecretFn',
   'http://i.bixbyjs.org/Logger'
 ];
