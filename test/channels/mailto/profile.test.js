@@ -8,6 +8,11 @@ var factory = require('../../../com/channels/mailto/profile');
 
 describe('channels/mailto/profile', function() {
   
+  it('should be annotated', function() {
+    expect(factory['@implements']).to.deep.equal('module:@authnomicon/oob.ProfileBuilder');
+    expect(factory['@channel']).to.equal('mailto');
+  });
+  
   it('should build profile', function() {
     var build = factory();
     
