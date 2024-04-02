@@ -43,7 +43,9 @@ describe('handlers/verify', function() {
     var noopStateStore = new Object();
     
     it('should provision user and log in', function(done) {
-      var builder = sinon.stub().returns({ foo: 'bar' });
+      var builder = sinon.stub().returns({
+        phoneNumbers: [ { value: '+1-201-555-0123' } ]
+      });
       var builderFactory = new Object();
       builderFactory.create = sinon.stub().resolves(builder);
       var store = new Object();
@@ -86,7 +88,7 @@ describe('handlers/verify', function() {
           expect(store.find).to.have.been.calledOnceWith('+1-201-555-0123');
           expect(directory.create).to.have.been.calledOnceWith(
             {
-              emails: [ { value: '+1-201-555-0123' } ]
+              phoneNumbers: [ { value: '+1-201-555-0123' } ]
             }
           );
           expect(store.add).to.have.been.calledOnceWith(
@@ -110,7 +112,9 @@ describe('handlers/verify', function() {
     }); // should provision user and log in
     
     it('should provision user, log in, and resume', function(done) {
-      var builder = sinon.stub().returns({ foo: 'bar' });
+      var builder = sinon.stub().returns({
+        phoneNumbers: [ { value: '+1-201-555-0123' } ]
+      });
       var builderFactory = new Object();
       builderFactory.create = sinon.stub().resolves(builder);
       var store = new Object();
@@ -154,7 +158,7 @@ describe('handlers/verify', function() {
           expect(store.find).to.have.been.calledOnceWith('+1-201-555-0123');
           expect(directory.create).to.have.been.calledOnceWith(
             {
-              emails: [ { value: '+1-201-555-0123' } ]
+              phoneNumbers: [ { value: '+1-201-555-0123' } ]
             }
           );
           expect(store.add).to.have.been.calledOnceWith(

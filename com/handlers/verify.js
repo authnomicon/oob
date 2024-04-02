@@ -12,35 +12,31 @@ exports = module.exports = function(builderFactory, storeFactory, directory, sch
           
           if (!user) {
             // JIT the user
-            
-            // TODO: make this more generic
-            var u = {
-              emails: [ { value: req.oobUser.address } ]
-            };
-            
-            directory.create(u, function(err, user) {
-              if (err) { return next(err); }
-              
-              store.add(req.oobUser.address, user, function(err) {
-                if (err) { return next(err); }
-                
-                req.login(user, function(err) {
+            builderFactory.create(req.oobUser.channel)
+              .then(function(build) {
+                var profile = build(req.oobUser);
+                directory.create(profile, function(err, user) {
                   if (err) { return next(err); }
-                  return next();
+              
+                  store.add(req.oobUser.address, user, function(err) {
+                    if (err) { return next(err); }
+                
+                    // TODO: add transport as context
+                    req.login(user, function(err) {
+                      if (err) { return next(err); }
+                      return next();
+                    });
+                  });
                 });
+              }, function(err) {
+                defer(next, err);
               });
-            });
           } else {
-            console.log('exists!');
             directory.read(user.id, function(err, user) {
               if (err) { return next(err); }
               // TODO: Handle undefined user
-          
-              console.log('read user');
-              console.log(user);
-          
-              //return;
-          
+              
+              // TODO: add transport as context
               req.login(user, function(err) {
                 if (err) { return next(err); }
                 return next();
