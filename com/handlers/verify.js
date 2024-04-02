@@ -2,7 +2,7 @@ var defer = typeof setImmediate === 'function'
   ? setImmediate
   : function(fn){ process.nextTick(fn.bind.apply(fn, arguments)); };
 
-exports = module.exports = function(storeFactory, directory, scheme, authenticator, store) {
+exports = module.exports = function(builderFactory, storeFactory, directory, scheme, authenticator, store) {
   
   function login(req, res, next) {
     storeFactory.create(req.oobUser.channel)
@@ -107,6 +107,7 @@ exports = module.exports = function(storeFactory, directory, scheme, authenticat
 };
 
 exports['@require'] = [
+  'module:@authnomicon/oob.ProfileBuilderFactory',
   'module:@authnomicon/credentials.OOBAddressStoreFactory',
   'module:@authnomicon/core.Directory',
   '../scheme',

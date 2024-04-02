@@ -23,7 +23,7 @@ describe('handlers/verify', function() {
     var authenticator = new Object();
     authenticator.authenticate = sinon.spy();
     var store = new Object();
-    var handler = factory(undefined, undefined, scheme, authenticator, store);
+    var handler = factory(undefined, undefined, undefined, scheme, authenticator, store);
     
     expect(handler).to.be.an('array');
     expect(bodyParserSpy).to.be.calledOnce;
@@ -43,6 +43,9 @@ describe('handlers/verify', function() {
     var noopStateStore = new Object();
     
     it('should provision user and log in', function(done) {
+      var builder = sinon.stub().returns({ foo: 'bar' });
+      var builderFactory = new Object();
+      builderFactory.create = sinon.stub().resolves(builder);
       var store = new Object();
       store.find = sinon.stub().yieldsAsync(null);
       store.add = sinon.stub().yieldsAsync(null);
@@ -62,7 +65,7 @@ describe('handlers/verify', function() {
         };
       };
       
-      var handler = factory(storeFactory, directory, undefined, authenticator, noopStateStore);
+      var handler = factory(builderFactory, storeFactory, directory, undefined, authenticator, noopStateStore);
       
       chai.express.use(handler)
         .request(function(req, res) {
@@ -107,6 +110,9 @@ describe('handlers/verify', function() {
     }); // should provision user and log in
     
     it('should provision user, log in, and resume', function(done) {
+      var builder = sinon.stub().returns({ foo: 'bar' });
+      var builderFactory = new Object();
+      builderFactory.create = sinon.stub().resolves(builder);
       var store = new Object();
       store.find = sinon.stub().yieldsAsync(null);
       store.add = sinon.stub().yieldsAsync(null);
@@ -126,7 +132,7 @@ describe('handlers/verify', function() {
         };
       };
       
-      var handler = factory(storeFactory, directory, undefined, authenticator, noopStateStore);
+      var handler = factory(builderFactory, storeFactory, directory, undefined, authenticator, noopStateStore);
       
       chai.express.use(handler)
         .request(function(req, res) {
