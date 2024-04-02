@@ -38,6 +38,7 @@
       "service",
       "channelfactory",
       "addressstorefactory",
+      "profilebuilderfactory",
       "address",
       "crypto/secret",
       "address/email/parser",
