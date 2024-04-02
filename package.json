@@ -39,12 +39,12 @@
       "channelfactory",
       "addressstorefactory",
       "profilebuilderfactory",
+      "channels/mailto/address",
       "channels/mailto/profile",
+      "channels/tel/address",
       "channels/tel/profile",
       "address",
-      "crypto/secret",
-      "address/email/parser",
-      "address/phone"
+      "crypto/secret"
     ]
   },
   "directories": {
