@@ -9,4 +9,4 @@ exports = module.exports = function() {
 
 // Module annotations.
 exports['@implements'] = 'module:@authnomicon/oob.ProfileBuilder';
-exports['@scheme'] = 'mailto';
+exports['@channel'] = 'mailto';

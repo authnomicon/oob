@@ -17,8 +17,8 @@ exports = module.exports = function(C, logger) {
         
           component.create()
             .then(function(fn) {
-              logger.info('Loaded OOB profile builder: ' + component.a['@name']);
-              factory.use(component.a['@name'], fn);
+              logger.info('Loaded OOB profile builder: ' + component.a['@channel']);
+              factory.use(component.a['@channel'], fn);
               iter(i + 1);
             }, function(err) {
               // TODO: Print the package name in the error, so it can be found
