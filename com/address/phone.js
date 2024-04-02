@@ -3,7 +3,7 @@ var PNF = require('google-libphonenumber').PhoneNumberFormat;
 
 // https://www.rfc-editor.org/rfc/rfc3966.html
 
-
+// TODO: port this to just a function
 function PhoneNumberClassifier() {
 }
 

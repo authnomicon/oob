@@ -39,6 +39,8 @@
       "channelfactory",
       "addressstorefactory",
       "profilebuilderfactory",
+      "channels/mailto/profile",
+      "channels/tel/profile",
       "address",
       "crypto/secret",
       "address/email/parser",
