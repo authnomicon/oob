@@ -14,4 +14,4 @@ exports = module.exports = function() {
 
 // Module annotations.
 exports['@implements'] = 'module:@authnomicon/oob.AddressParser';
-exports['@scheme'] = 'tel';
+exports['@channel'] = 'tel';

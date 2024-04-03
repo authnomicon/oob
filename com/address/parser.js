@@ -16,7 +16,7 @@ exports = module.exports = function(C, logger) {
           
           component.create()
             .then(function(p) {
-              logger.info('Loaded address parser: ' + component.a['@scheme']);
+              logger.info('Loaded address parser: ' + component.a['@channel']);
               parser.use(p);
               iter(i + 1);
             }, function(err) {
