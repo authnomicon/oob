@@ -67,7 +67,7 @@ describe('handlers/verify', function() {
         };
       };
       
-      var handler = factory(builderFactory, storeFactory, directory, undefined, authenticator, noopStateStore);
+      var handler = factory(storeFactory, builderFactory, directory, undefined, authenticator, noopStateStore);
       
       chai.express.use(handler)
         .request(function(req, res) {
@@ -140,7 +140,7 @@ describe('handlers/verify', function() {
         };
       };
       
-      var handler = factory(builderFactory, storeFactory, directory, undefined, authenticator, noopStateStore);
+      var handler = factory(storeFactory, builderFactory, directory, undefined, authenticator, noopStateStore);
       
       chai.express.use(handler)
         .request(function(req, res) {
@@ -201,7 +201,7 @@ describe('handlers/verify', function() {
         };
       };
       
-      var handler = factory(builderFactory, storeFactory, directory, undefined, authenticator, noopStateStore);
+      var handler = factory(storeFactory, builderFactory, directory, undefined, authenticator, noopStateStore);
       
       chai.express.use(handler)
         .request(function(req, res) {
@@ -269,7 +269,7 @@ describe('handlers/verify', function() {
         };
       };
       
-      var handler = factory(builderFactory, storeFactory, directory, undefined, authenticator, noopStateStore);
+      var handler = factory(storeFactory, builderFactory, directory, undefined, authenticator, noopStateStore);
       
       chai.express.use(handler)
         .request(function(req, res) {
