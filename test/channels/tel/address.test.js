@@ -13,7 +13,7 @@ describe('channels/tel/address', function() {
     expect(factory['@channel']).to.equal('tel');
   });
   
-  it('should parse address', function() {
+  it('should parse phone number', function() {
     var parse = factory();
     
     var addr = parse('+1-201-555-0123');
@@ -23,6 +23,12 @@ describe('channels/tel/address', function() {
     });
   });
   
-  // TODO: non-phone test case
+  it('should throw when parsing email address', function() {
+    var parse = factory();
+    
+    expect(function() {
+      parse('alice@example.com');
+    }).to.throw(Error, 'The string supplied did not seem to be a phone number');
+  });
   
 });

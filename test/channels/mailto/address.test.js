@@ -13,7 +13,7 @@ describe('channels/mailto/address', function() {
     expect(factory['@channel']).to.equal('mailto');
   });
   
-  it('should parse address', function() {
+  it('should parse email address', function() {
     var parse = factory();
     
     var addr = parse('alice@example.com');
@@ -23,6 +23,12 @@ describe('channels/mailto/address', function() {
     });
   });
   
-  // TODO: non-email test case
+  it('should throw when parsing phone number', function() {
+    var parse = factory();
+    
+    expect(function() {
+      parse('+1-201-555-0123');
+    }).to.throw(TypeError);
+  });
   
 });
