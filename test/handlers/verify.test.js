@@ -248,15 +248,14 @@ describe('handlers/verify', function() {
         .listen();
     }); // should provision user, log in, and resume
     
-    // WIP
     it('should next with error when address store fails to be created', function(done) {
-      var builderFactory = new Object();
-      builderFactory.create = sinon.spy();
       var store = new Object();
       store.find = sinon.stub().yieldsAsync(null);
       store.add = sinon.stub().yieldsAsync(null);
       var storeFactory = new Object();
       storeFactory.create = sinon.stub().rejects(new Error('something went wrong'));
+      var builderFactory = new Object();
+      builderFactory.create = sinon.spy();
       var directory = new Object();
       directory.create = sinon.stub().yieldsAsync(null, {
         id: '703887',
@@ -291,7 +290,12 @@ describe('handlers/verify', function() {
           expect(err).to.be.an.instanceOf(Error);
           expect(err.message).to.equal('something went wrong');
           
+          expect(store.find).to.not.have.been.called;
+          expect(store.add).to.not.have.been.called;
           expect(builderFactory.create).to.not.have.been.called;
+          expect(directory.create).to.not.have.been.called;
+          expect(directory.read).to.not.have.been.called;
+          expect(req.login).to.not.have.been.called;
           
           done();
         })
