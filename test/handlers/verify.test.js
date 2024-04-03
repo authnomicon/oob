@@ -43,16 +43,16 @@ describe('handlers/verify', function() {
     var noopStateStore = new Object();
     
     it('should provision user and log in', function(done) {
-      var builder = sinon.stub().returns({
-        phoneNumbers: [ { value: '+1-201-555-0123' } ]
-      });
-      var builderFactory = new Object();
-      builderFactory.create = sinon.stub().resolves(builder);
       var store = new Object();
       store.find = sinon.stub().yieldsAsync(null);
       store.add = sinon.stub().yieldsAsync(null);
       var storeFactory = new Object();
       storeFactory.create = sinon.stub().resolves(store);
+      var builder = sinon.stub().returns({
+        phoneNumbers: [ { value: '+1-201-555-0123' } ]
+      });
+      var builderFactory = new Object();
+      builderFactory.create = sinon.stub().resolves(builder);
       var directory = new Object();
       directory.create = sinon.stub().yieldsAsync(null, {
         id: '703887',
@@ -114,11 +114,6 @@ describe('handlers/verify', function() {
     }); // should provision user and log in
     
     it('should login previously provisioned user', function(done) {
-      var builder = sinon.stub().returns({
-        phoneNumbers: [ { value: '+1-201-555-0123' } ]
-      });
-      var builderFactory = new Object();
-      builderFactory.create = sinon.stub().resolves(builder);
       var store = new Object();
       store.find = sinon.stub().yieldsAsync(null, {
         id: '703887'
@@ -126,6 +121,11 @@ describe('handlers/verify', function() {
       store.add = sinon.stub().yieldsAsync(null);
       var storeFactory = new Object();
       storeFactory.create = sinon.stub().resolves(store);
+      var builder = sinon.stub().returns({
+        phoneNumbers: [ { value: '+1-201-555-0123' } ]
+      });
+      var builderFactory = new Object();
+      builderFactory.create = sinon.stub().resolves(builder);
       var directory = new Object();
       directory.create = sinon.spy();
       directory.read = sinon.stub().yieldsAsync(null, {
@@ -177,16 +177,16 @@ describe('handlers/verify', function() {
     }); // should provision user and log in
     
     it('should provision user, log in, and resume', function(done) {
-      var builder = sinon.stub().returns({
-        phoneNumbers: [ { value: '+1-201-555-0123' } ]
-      });
-      var builderFactory = new Object();
-      builderFactory.create = sinon.stub().resolves(builder);
       var store = new Object();
       store.find = sinon.stub().yieldsAsync(null);
       store.add = sinon.stub().yieldsAsync(null);
       var storeFactory = new Object();
       storeFactory.create = sinon.stub().resolves(store);
+      var builder = sinon.stub().returns({
+        phoneNumbers: [ { value: '+1-201-555-0123' } ]
+      });
+      var builderFactory = new Object();
+      builderFactory.create = sinon.stub().resolves(builder);
       var directory = new Object();
       directory.create = sinon.stub().yieldsAsync(null, {
         id: '703887',
@@ -221,6 +221,8 @@ describe('handlers/verify', function() {
         .finish(function() {
           expect(storeFactory.create).to.have.been.calledOnceWith('tel');
           expect(store.find).to.have.been.calledOnceWith('+1-201-555-0123');
+          expect(builderFactory.create).to.have.been.calledOnceWith('tel');
+          expect(builder).to.have.been.calledOnceWith({ channel: 'tel', address: '+1-201-555-0123' });
           expect(directory.create).to.have.been.calledOnceWith(
             {
               phoneNumbers: [ { value: '+1-201-555-0123' } ]
