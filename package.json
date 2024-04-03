@@ -34,16 +34,16 @@
   "assembly": {
     "namespace": "org.authnomicon/oob",
     "components": [
+      "address",
+      "addressstorefactory",
+      "channelfactory",
+      "profilebuilderfactory",
       "prompt",
       "service",
-      "channelfactory",
-      "addressstorefactory",
-      "profilebuilderfactory",
       "channels/mailto/address",
       "channels/mailto/profile",
       "channels/tel/address",
-      "channels/tel/profile",
-      "address"
+      "channels/tel/profile"
     ]
   },
   "directories": {
