@@ -18,7 +18,7 @@ describe('channels/tel/address', function() {
     
     var addr = parse('+1-201-555-0123');
     expect(addr).to.deep.equal({
-      scheme: 'tel',
+      channel: 'tel',
       address: '+12015550123'
     });
   });

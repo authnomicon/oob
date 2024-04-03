@@ -44,7 +44,7 @@ exports = module.exports = function(channelFactory, Address, store) {
       , addr;
     
     if (address) { addr = Address.parse(address); }
-    channelFactory.create(addr && addr.scheme)
+    channelFactory.create(addr && addr.channel)
       .then(function(channel) {
         if (channel.transmit) {
           var secret = rand.generate(6, NUMERIC);
@@ -52,13 +52,13 @@ exports = module.exports = function(channelFactory, Address, store) {
             if (err) { return defer(next, err); }
             
             ctx = ctx || {};
-            req.state.channel = addr.scheme;
+            req.state.channel = addr.channel;
             req.state.address = addr.address;
             if (ctx.transport) { req.state.transport = ctx.transport; }
             // Store secret in state, to bind primary and secondary channels.
             req.state.secret = secret;
             
-            res.locals.channel = addr.scheme;
+            res.locals.channel = addr.channel;
             res.locals.address = addr.address;
             if (ctx.transport) { res.locals.transport = ctx.transport; }
             res.locals.csrfToken = req.csrfToken();

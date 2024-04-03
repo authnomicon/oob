@@ -6,7 +6,7 @@ exports = module.exports = function() {
   
   return function(address) {
     var parsed = new Address(address);
-    return { scheme: 'mailto', address: parsed.address() };
+    return { channel: 'mailto', address: parsed.address() };
   };
 };
 

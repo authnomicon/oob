@@ -8,7 +8,7 @@ exports = module.exports = function() {
   
   return function(address) {
     var number = phoneUtil.parseAndKeepRawInput(address, 'US');
-    return { scheme: 'tel', address: phoneUtil.format(number, PNF.E164) };
+    return { channel: 'tel', address: phoneUtil.format(number, PNF.E164) };
   };
 };
 

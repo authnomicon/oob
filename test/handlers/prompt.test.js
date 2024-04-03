@@ -35,7 +35,7 @@ describe('handlers/prompt', function() {
       var channelFactory = new Object();
       channelFactory.create = sinon.stub().resolves(channel);
       var address = new Object();
-      address.parse = sinon.stub().returns({ scheme: 'tel', address: '+1-201-555-0123' });
+      address.parse = sinon.stub().returns({ channel: 'tel', address: '+1-201-555-0123' });
       var store = new Object();
       store.set = sinon.stub().yieldsAsync(null);
       var handler = factory(channelFactory, address, store);
@@ -85,7 +85,7 @@ describe('handlers/prompt', function() {
       var channelFactory = new Object();
       channelFactory.create = sinon.stub().resolves(channel);
       var address = new Object();
-      address.parse = sinon.stub().returns({ scheme: 'tel', address: '+1-201-555-0123' });
+      address.parse = sinon.stub().returns({ channel: 'tel', address: '+1-201-555-0123' });
       var store = new Object();
       store.set = sinon.stub().yieldsAsync(null);
       var handler = factory(channelFactory, address, store);
@@ -136,7 +136,7 @@ describe('handlers/prompt', function() {
       var channelFactory = new Object();
       channelFactory.create = sinon.stub().resolves(channel);
       var address = new Object();
-      address.parse = sinon.stub().returns({ scheme: 'mailto', address: 'alice@example.com' });
+      address.parse = sinon.stub().returns({ channel: 'mailto', address: 'alice@example.com' });
       var store = new Object();
       store.set = sinon.stub().yieldsAsync(null);
       var handler = factory(channelFactory, address, store);
@@ -277,7 +277,7 @@ describe('handlers/prompt', function() {
       var channelFactory = new Object();
       channelFactory.create = sinon.stub().resolves(channel);
       var address = new Object();
-      address.parse = sinon.stub().returns({ scheme: 'tel', address: '+1-201-555-0123' });
+      address.parse = sinon.stub().returns({ channel: 'tel', address: '+1-201-555-0123' });
       var store = new Object();
       store.set = sinon.stub().yieldsAsync(null);
       var handler = factory(channelFactory, address, store);
@@ -344,7 +344,7 @@ describe('handlers/prompt', function() {
       var channelFactory = new Object();
       channelFactory.create = sinon.stub().rejects(new Error('something went wrong'));
       var address = new Object();
-      address.parse = sinon.stub().returns({ scheme: 'tel', address: '+1-201-555-0123' });
+      address.parse = sinon.stub().returns({ channel: 'tel', address: '+1-201-555-0123' });
       var store = new Object();
       store.set = sinon.stub().yieldsAsync(null);
       var handler = factory(channelFactory, address, store);

@@ -18,7 +18,7 @@ describe('channels/mailto/address', function() {
     
     var addr = parse('alice@example.com');
     expect(addr).to.deep.equal({
-      scheme: 'mailto',
+      channel: 'mailto',
       address: 'alice@example.com'
     });
   });
