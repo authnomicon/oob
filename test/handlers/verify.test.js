@@ -86,6 +86,8 @@ describe('handlers/verify', function() {
         .finish(function() {
           expect(storeFactory.create).to.have.been.calledOnceWith('tel');
           expect(store.find).to.have.been.calledOnceWith('+1-201-555-0123');
+          expect(builderFactory.create).to.have.been.calledOnceWith('tel');
+          expect(builder).to.have.been.calledOnceWith({ channel: 'tel', address: '+1-201-555-0123' });
           expect(directory.create).to.have.been.calledOnceWith(
             {
               phoneNumbers: [ { value: '+1-201-555-0123' } ]
@@ -158,6 +160,8 @@ describe('handlers/verify', function() {
           expect(storeFactory.create).to.have.been.calledOnceWith('tel');
           expect(store.find).to.have.been.calledOnceWith('+1-201-555-0123');
           expect(directory.read).to.have.been.calledOnceWith('703887');
+          expect(builderFactory.create).to.not.have.been.called;
+          expect(builder).to.not.have.been.called;
           expect(directory.create).to.not.have.been.called;
           expect(store.add).to.not.have.been.called;
           expect(this.req.login).to.have.been.calledOnceWith({
