@@ -257,10 +257,7 @@ describe('handlers/verify', function() {
       var builderFactory = new Object();
       builderFactory.create = sinon.spy();
       var directory = new Object();
-      directory.create = sinon.stub().yieldsAsync(null, {
-        id: '703887',
-        displayName: 'Jane Doe'
-      });
+      directory.create = sinon.spy();
       directory.read = sinon.spy();
       var authenticator = new Object();
       authenticator.authenticate = function(name, options) {
@@ -311,10 +308,7 @@ describe('handlers/verify', function() {
       var builderFactory = new Object();
       builderFactory.create = sinon.spy();
       var directory = new Object();
-      directory.create = sinon.stub().yieldsAsync(null, {
-        id: '703887',
-        displayName: 'Jane Doe'
-      });
+      directory.create = sinon.spy();
       directory.read = sinon.spy();
       var authenticator = new Object();
       authenticator.authenticate = function(name, options) {
@@ -355,6 +349,57 @@ describe('handlers/verify', function() {
         })
         .listen();
     }); // should next with error when user fails to be found based on out-of-band address
+    
+    it('should next with error when profile builder fails to be created', function(done) {
+      var store = new Object();
+      store.find = sinon.stub().yieldsAsync(null);
+      store.add = sinon.stub().yieldsAsync(null);
+      var storeFactory = new Object();
+      storeFactory.create = sinon.stub().resolves(store);
+      var builderFactory = new Object();
+      builderFactory.create = sinon.stub().rejects(new Error('something went wrong'));
+      var directory = new Object();
+      directory.create = sinon.spy();
+      directory.read = sinon.spy();
+      var authenticator = new Object();
+      authenticator.authenticate = function(name, options) {
+        return function(req, res, next) {
+          req.oobUser = { channel: 'tel', address: '+1-201-555-0123' };
+          next();
+        };
+      };
+      
+      var handler = factory(storeFactory, builderFactory, directory, undefined, authenticator, noopStateStore);
+      
+      chai.express.use(handler)
+        .request(function(req, res) {
+          req.login = sinon.stub().yieldsAsync(null);
+          
+          req.method = 'POST';
+          req.body = {
+            code: '123456',
+            csrf_token: '3aev7m03-1WTaAw4lJ_GWEMkjwFBu_lwNWG8'
+          };
+          req.session = {
+            csrfSecret: 'zbVXAFVVUSXO0_ZZLBYVP9ue'
+          };
+          req.connection = {};
+        })
+        .next(function(err, req, res) {
+          expect(err).to.be.an.instanceOf(Error);
+          expect(err.message).to.equal('something went wrong');
+          
+          expect(store.find).to.have.been.called;
+          expect(store.add).to.not.have.been.called;
+          expect(builderFactory.create).to.have.been.called;
+          expect(directory.create).to.not.have.been.called;
+          expect(directory.read).to.not.have.been.called;
+          expect(req.login).to.not.have.been.called;
+          
+          done();
+        })
+        .listen();
+    }); // should next with error when profile builder fails to be created
     
   }); // handler
   
