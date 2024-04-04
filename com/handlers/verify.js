@@ -47,34 +47,6 @@ exports = module.exports = function(storeFactory, builderFactory, directory, sch
       }, function(err) {
         defer(next, err);
       });
-    
-    
-    /*
-    addressStoreFactory.create(channel)
-      .then(function(store) {
-        console.log('CHECK THE STORE!');
-        
-      }, function(err) {
-        defer(cb, err);
-      });
-    */
-    
-    /*
-    addressStore.find(address, channel, function(err, user) {
-      console.log('FOUND USER');
-      console.log(err);
-      console.log(user);
-      
-      if (!user) {
-        
-      } else {
-        return cb(null, user);
-      }
-      
-    });
-    */
-    
-   // next();
   }
   
   function resume(req, res, next) {
