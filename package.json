@@ -1,6 +1,6 @@
 {
   "name": "@authnomicon/oob",
-  "version": "0.0.7",
+  "version": "0.0.1",
   "description": "Out-of-band authentication components for the Authnomicon project.",
   "keywords": [
     "oob",
